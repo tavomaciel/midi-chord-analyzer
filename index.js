@@ -1,16 +1,14 @@
 const NATURALS_PER_OCTAVE = 8;
 const TONES_PER_OCTAVE = 12;
-const OCTAVES = 9;
-
-const keys = OCTAVES * TONES_PER_OCTAVE;
-const firstKey = 12; // C0
-const lastKey = OCTAVES * TONES_PER_OCTAVE + firstKey; // C9
-const whiteKeys = OCTAVES * NATURALS_PER_OCTAVE;
 
 // Calculated on resize
+let keys = 0;
+let firstKey = 0;
+let octaves = 0;
 let octaveWidth = 0;
 let naturalKeyWidth = 0;
 let accidentalKeyWidth = 0;
+let keysOffset = 0;
 
 const canvasWrapper = document.getElementById('pianoWrapper');
 const canvas = document.getElementById('pianoCanvas');
@@ -40,25 +38,18 @@ function isNaturalKey(note) {
             return false;
     }
 }
-function countWhiteKeysBetween(firstKey, lastKey) {
-    let count = 0;
-    for (let i = firstKey; i <= lastKey; ++i) {
-        if (isWhiteKey(i)) count++;
-    }
-    return count;
-}
 
 function renderKeys() {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for(let i = 0; i < keys; ++i) {
         const key = firstKey + i;
-        const octave = Math.trunc(i / 12);
-        const tone = i % 12;
-        if (!isNaturalKey(i)) continue;
+        const octave = Math.trunc(key / TONES_PER_OCTAVE);
+        const tone = key % TONES_PER_OCTAVE;
+        if (!isNaturalKey(tone)) continue;
 
         const keyOctaveIndex = Math.trunc((5 * tone) / 8);
-        const x = octaveWidth * octave + keyOctaveIndex * naturalKeyWidth;
+        const x = octaveWidth * octave + keyOctaveIndex * naturalKeyWidth + keysOffset;
         const height = canvas.height;
         
         ctx.fillStyle = 'white';
@@ -68,11 +59,11 @@ function renderKeys() {
     }
     for(let i = 0; i < keys; ++i) {
         const key = firstKey + i;
-        const octave = Math.trunc(i / 12);
-        const tone = i % 12;
-        if (isNaturalKey(i)) continue;
+        const octave = Math.trunc(key / TONES_PER_OCTAVE);
+        const tone = key % TONES_PER_OCTAVE;
+        if (isNaturalKey(tone)) continue;
         const keyOctaveIndex = Math.trunc(tone / 2 + 1);
-        const x = octaveWidth * octave + keyOctaveIndex * naturalKeyWidth - accidentalKeyWidth * 0.5;
+        const x = octaveWidth * octave + keyOctaveIndex * naturalKeyWidth - accidentalKeyWidth * 0.5 + keysOffset;
         const height = canvas.height / 2.0;
 
         ctx.fillStyle = 'black';
@@ -82,14 +73,20 @@ function renderKeys() {
     }
 }
 
-function resizeCanvas() {
+function recalcCanvas() {
     const wrapperRect = canvasWrapper.getBoundingClientRect();
     canvas.width = wrapperRect.width;
     canvas.height = wrapperRect.height;
-    octaveWidth = canvas.width / OCTAVES;
+
+    keys = 88;
+    firstKey = 21; // A0
+    octaves = keys / TONES_PER_OCTAVE;
+    octaveWidth = (canvas.width - 20) / octaves;
     naturalKeyWidth = octaveWidth / 7;
     accidentalKeyWidth = naturalKeyWidth / 2.0;
+    keysOffset = -octaveWidth * firstKey / TONES_PER_OCTAVE + 10;
+    // keysOffset = -octaveWidth;
     renderKeys();
 }
-resizeCanvas();
-new ResizeObserver(resizeCanvas).observe(canvasWrapper);
+new ResizeObserver(recalcCanvas).observe(canvasWrapper);
+recalcCanvas();
