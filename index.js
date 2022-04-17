@@ -15,16 +15,12 @@ let accidentalKeyWidth = 0;
 const canvasWrapper = document.getElementById('pianoWrapper');
 const canvas = document.getElementById('pianoCanvas');
 
-/*
-  1 -> 1
-  3 -> 2
-
-  6 -> 5
-  8 -> 7
-  10 -> 9
-*/
-
 function isNaturalKey(note) {
+    // TODO better way of doing this?
+    // Can be replaced with
+    // fun transform(note: Int): Boolean = (note % 12)
+    //   .let { ((6 * it) / 5 - it / 10) % 2 == 0 }
+    // But there might be ways of improving it, with modulo arithmetic.
     switch(note % 12) {
         case 0:
         case 2:
