@@ -1,14 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <title>Chord Analyzer</title>
     <link rel="stylesheet" href="index.css">
     <script src="index.js" defer></script>
-  </head>
-  <div id="pianoWrapper">
+</head>
+<div>
+    <span>Connected MIDI Device: </span>
+    <select id="midiSelect">
+        <option>None</option>
+    </select>
+</div>
+<div>
+    <div>
+        <input type="checkbox" id="showNotesOnKeyboard" name="notesOnKeyboard" checked>
+        <label for="notesOnKeyboard">Show notes on keyboard</label>
+        <br/>
+        <input type="checkbox" id="showOctaveNames" name="octaveNames">
+        <label for="ocateveNames">Show octaves</label>
+    </div>
+    <span>Keys pressed: </span>
+    <span id="pressedNotesSpan"></span>
+</div>
+<div id="pianoWrapper">
     <canvas id="pianoCanvas"></canvas>
-  </div>
-  <body>
-  </body>
+</div>
+
+<body>
+</body>
+
 </html>
