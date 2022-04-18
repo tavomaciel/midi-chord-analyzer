@@ -35,6 +35,23 @@ const tetrads = [
 let midi = null
 let currentlySelectedMidiInputId = null
 
+// Challenge state
+const challengeChords = [
+    // TODO make this choosable on the UI
+    diads[0],
+    triads[0], triads[1], triads[2], triads[3],
+    tetrads[0], tetrads[1]
+]
+let challengeStarted = false
+let challengeTarget = {
+    name: "Cmaj",
+    rootClass: 0,
+    pitchClasses: [0, 4, 7]
+}
+let challengeScore = 0
+const challengeTimePerChord = []
+let challengeStartTime = 0
+
 // Rendering state - Calculated on recalcCanvas()
 let keys = 0
 let firstKey = 0
@@ -58,6 +75,14 @@ const $pressedNotesSpan = document.getElementById("pressedNotesSpan")
 const $pressedChordsSpan = document.getElementById("pressedChordsSpan")
 const $showOctaveNames = document.getElementById("showOctaveNames")
 const $showNotesOnKeyboard = document.getElementById("showNotesOnKeyboard")
+const $challengeStartContainer = document.getElementById("challengeStartContainer")
+const $startChallenge = document.getElementById("startChallenge")
+const $challengeContainer = document.getElementById("challengeContainer")
+const $challengeTarget = document.getElementById("challengeTarget")
+const $challengeCongrats = document.getElementById("challengeCongrats")
+const $challengeStatus = document.getElementById("challengeStatus")
+const $challengeScore = document.getElementById("challengeScore")
+const $challengeAvgTime = document.getElementById("challengeAvgTime")
 
 // Notes
 function clearNotePresses() {
@@ -136,7 +161,6 @@ function getChords(notes) {
             }
         }
     }
-    console.log(JSON.stringify(chords))
     return chords
 }
 
@@ -152,8 +176,9 @@ function updateKeysPressed() {
     }
     $pressedNotesSpan.innerText = friendlyNames
 
-    const chords = getChords(keysPressed)
-    $pressedChordsSpan.innerText = chords.join(', ')
+    const chordsPressed = getChords(keysPressed)
+    $pressedChordsSpan.innerText = chordsPressed.join(', ')
+    checkChallenge(chordsPressed)
 }
 
 function isNaturalKey(note) {
@@ -349,6 +374,62 @@ function onMIDIFailure(msg) {
     console.log("Failed to get MIDI access - " + msg)
 }
 
+// Challenge
+function generateNewChallengeTarget() {
+    // TODO add all chord types
+    // TODO add inversions!
+    const chordType = challengeChords[Math.floor(Math.random()*challengeChords.length)]
+    const rootClass = Math.floor(Math.random() * 12)
+    challengeTarget = {
+        name: PITCH_NAMES[rootClass % TONES_PER_OCTAVE] + chordType.abbrv,
+        rootClass: rootClass,
+        pitchClasses: chordType.pitchClasses
+    }
+    $challengeTarget.innerText = challengeTarget.name
+}
+
+function averageArray(array) {
+    let total = 0
+    for (element of array) total += element
+    return total / array.length
+}
+function checkChallenge(chordsPressed) {
+    if (!challengeStarted) return
+    // TODO Certainly there are better ways than checking the name...
+    if (chordsPressed.includes(challengeTarget.name)) {
+        // TODO add 1up sound
+        
+        challengeScore += 1
+        $challengeScore.innerText = challengeScore
+
+        // TODO what if someone leaves the tab open and returns to it?
+        challengeTimePerChord.push(Date.now() - challengeStartTime)
+        $challengeAvgTime.innerText = Math.trunc(averageArray(challengeTimePerChord) / 10) / 100
+
+        challengeStarted = false;
+        $challengeCongrats.hidden = false;
+        $challengeContainer.hidden = true;
+        generateNewChallengeTarget()
+        setTimeout(() => {
+            challengeStarted = true;
+            $challengeCongrats.hidden = true;
+            $challengeContainer.hidden = false;
+            challengeStartTime = Date.now()
+        }, 1000)
+    }
+}
+
+function startChallenge() {
+    $challengeStartContainer.hidden = true
+    $challengeStatus.hidden = false
+    
+    generateNewChallengeTarget()
+
+    challengeStarted = true
+    $challengeContainer.hidden = false
+    challengeStartTime = Date.now()
+}
+
 // Peripherals Input
 // Mouse State
 let mouseAddingKey = null
@@ -461,6 +542,8 @@ $pianoCanvas.onpointerdown = canvasMouseDown
 $pianoCanvas.onpointermove = canvasMouseMove
 $pianoCanvas.onpointerup = canvasMouseUp
 $pianoCanvas.onpointerleave = canvasMouseLeave
+
+$startChallenge.onclick = startChallenge
 
 clearNotePresses()
 recalcCanvas()

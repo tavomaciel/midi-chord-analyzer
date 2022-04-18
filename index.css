@@ -2,3 +2,32 @@
     width: 100%;
     height: 10vw;
 }
+#challenge {
+    width: 100%;
+    text-align: center;
+}
+#challengeStartContainer {
+    padding-top: 50px;
+    padding-bottom: 50px;
+    width: 100%;
+    height: 100%;
+}
+#challengeContainer {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+#challengeTarget {
+    font-size: 150%;
+    color: #339
+}
+#startChallenge {
+    width: 180px;
+    height: 30px;
+}
+#challengeCongrats {
+    font-size: 150%;
+    color: green;
+}
+#challengeStatus {
+    text-align: left;
+}

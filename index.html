@@ -7,6 +7,19 @@
     <link rel="stylesheet" href="index.css">
     <script src="index.js" defer></script>
 </head>
+<div id="challenge">
+    <div id="challengeStartContainer"><button id="startChallenge">Challenge me!</button></div>
+    <div id="challengeStatus" hidden=true>
+        <div><span>Score: </span> <span id="challengeScore">0</span></div>
+        <div><span>Average time: </span> <span id="challengeAvgTime">0</span> <span>s</span></div>
+    </div>
+    <div id="challengeContainer" hidden="true">
+        <span>Play a </span>
+        <span id="challengeTarget"></span>
+        <span> chord!</span>
+    </div>
+    <div id="challengeCongrats" hidden="true">Correct!</div>
+</div>
 <div>
     <span>Connected MIDI Device: </span>
     <select id="midiSelect">
@@ -19,7 +32,7 @@
         <label for="notesOnKeyboard">Show notes on keyboard</label>
         <br/>
         <input type="checkbox" id="showOctaveNames" name="octaveNames">
-        <label for="ocateveNames">Show octaves</label>
+        <label for="octaveNames">Show octaves</label>
     </div>
     <span>Keys pressed: </span>
     <span id="pressedNotesSpan"></span><br/>
