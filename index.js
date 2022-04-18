@@ -3,7 +3,34 @@ const TONES_PER_OCTAVE = 12
 const MIDI_NOTES = 128
 const PITCH_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 const PRESSED_KEY_COLOR = "cornflowerblue"
+const MOUSE_ACTIVE_KEY_COLOR = "#DAA"
+const MOUSE_DRAG_KEY_COLOR = "#777"
+const MOUSE_ACTIVE_AND_DRAGGING_KEY_COLOR = "#E77"
 const KEY_STROKE_COLOR = "#223"
+
+// Chord constants https://en.wikipedia.org/wiki/List_of_chords
+const diads = [
+    { name: "Power Chord", abbrv: "5", pitchClasses: [0, 7] }
+]
+const triads = [
+    { name: "Major", abbrv: "maj", pitchClasses: [0, 4, 7] },
+    { name: "Minor", abbrv: "min", pitchClasses: [0, 3, 7] },
+    { name: "Diminished", abbrv: "dim", pitchClasses: [0, 3, 6] },
+    { name: "Augmented", abbrv: "aug", pitchClasses: [0, 4, 8] },
+    { name: "Suspended 4th", abbrv: "sus4", pitchClasses: [0, 5, 7] },
+    { name: "Suspended 2nd", abbrv: "sus2", pitchClasses: [0, 2, 7] },
+]
+const tetrads = [
+    { name: "Major 7th", abbrv: "maj7", pitchClasses: [0, 4, 7, 11] },
+    { name: "Minor 7th", abbrv: "min7", pitchClasses: [0, 3, 7, 10] },
+    { name: "Major Minor 7th", abbrv: "majmin7", pitchClasses: [0, 4, 7, 10] },
+    { name: "Minor Major 7th", abbrv: "minmaj7", pitchClasses: [0, 3, 7, 11] },
+    { name: "Diminished 7th", abbrv: "dim7", pitchClasses: [0, 3, 6, 9] },
+    { name: "Diminished Major 7th", abbrv: "dimmaj7", pitchClasses: [0, 3, 6, 11] },
+    { name: "Augmented 7th", abbrv: "aug7", pitchClasses: [0, 4, 8, 10] },
+    { name: "Augmented Major 7th", abbrv: "augmaj7", pitchClasses: [0, 4, 8, 11] },
+]
+
 // Midi access - requested below
 let midi = null
 let currentlySelectedMidiInputId = null
@@ -28,6 +55,7 @@ const $pianoWrapper = document.getElementById("pianoWrapper")
 const $pianoCanvas = document.getElementById("pianoCanvas")
 const $midiSelect = document.getElementById("midiSelect")
 const $pressedNotesSpan = document.getElementById("pressedNotesSpan")
+const $pressedChordsSpan = document.getElementById("pressedChordsSpan")
 const $showOctaveNames = document.getElementById("showOctaveNames")
 const $showNotesOnKeyboard = document.getElementById("showNotesOnKeyboard")
 
@@ -60,6 +88,58 @@ function noteFriendlyName(note) {
     return ret
 }
 
+function getPitchClasses(notes) {
+    const pitchClasses = []
+    for (note of notes) {
+        const pitchClass = note % 12
+        if (!pitchClasses.includes(pitchClass)) pitchClasses.push(pitchClass)
+    }
+    return pitchClasses
+}
+function arrayEquals(a, b) {
+    let i = a.length;
+    while (i--)
+        if (a[i] !== b[i]) return false;
+    return true
+}
+function getChords(notes) {
+    let candidateChords = null
+    if (notes.length == 2) {
+        candidateChords = diads
+    } else if (notes.length == 3) {
+        candidateChords = triads
+    } else if (notes.length == 4) {
+        candidateChords = tetrads
+    } else {
+        // TODO add other types of chords
+        return []
+    }
+    const chords = []
+    for (let i = 0; i < notes.length; ++i) {
+        const transposedPCSet = []
+        const root = notes[i]
+        for (let j = 0; j < notes.length; ++j) {
+            const note = notes[(i+j) % notes.length]
+            // TODO Only works for chords packed in 2 octaves. Anything further than that and this will break.
+            // To make it work anywhere in the board, I'd need to normalise all pc sets
+            const transposed = ((note - root) + 12) % 12
+            transposedPCSet.push(transposed)
+        }
+        for (candidateChord of candidateChords) {
+            if (arrayEquals(candidateChord.pitchClasses, transposedPCSet)) {
+                const inversionName = i == 0 ? "" : "/" + PITCH_NAMES[notes[0] % TONES_PER_OCTAVE]
+                // chords.push({
+                //     chord: candidateChord.name,
+                //     notation: 
+                // })
+                chords.push(PITCH_NAMES[root % TONES_PER_OCTAVE] + candidateChord.abbrv + inversionName)
+            }
+        }
+    }
+    console.log(JSON.stringify(chords))
+    return chords
+}
+
 function updateKeysPressed() {
     keysPressed.length = 0
     let friendlyNames = ""
@@ -71,6 +151,9 @@ function updateKeysPressed() {
         }
     }
     $pressedNotesSpan.innerText = friendlyNames
+
+    const chords = getChords(keysPressed)
+    $pressedChordsSpan.innerText = chords.join(', ')
 }
 
 function isNaturalKey(note) {
@@ -104,6 +187,22 @@ function naturalKeyOctaveIndexToPitchClass(naturalKeyOctaveIndex) {
     }
 }
 
+function getKeyColor(key, defaultColor) {
+    if (!isKeyPressed(key)) return defaultColor
+    const isMouseActive = isKeyPressed(key, "mouseActive")
+    const isMouseDragging = isKeyPressed(key, "mouseDrag")
+    let isMidiActive = keysPressedChannels[key].size > (isMouseActive + isMouseDragging)
+    if (isMidiActive) {
+        return PRESSED_KEY_COLOR
+    } else if (isMouseActive && isMouseDragging) {
+        return MOUSE_ACTIVE_AND_DRAGGING_KEY_COLOR
+    } else if (isMouseActive) {
+        return MOUSE_ACTIVE_KEY_COLOR
+    } else {
+        return MOUSE_DRAG_KEY_COLOR
+    }
+}
+
 // Rendering & Canvas
 function renderKeys() {
     const ctx = $pianoCanvas.getContext("2d")
@@ -121,7 +220,7 @@ function renderKeys() {
         const keyOctaveIndex = Math.trunc((5 * tone) / 8)
         const x = octaveWidth * octave + keyOctaveIndex * naturalKeyWidth + keysOffset
 
-        ctx.fillStyle = isKeyPressed(key) ? PRESSED_KEY_COLOR : "white"
+        ctx.fillStyle = getKeyColor(key, "white")
         ctx.fillRect(x, 0, naturalKeyWidth, naturalKeyHeight)
         ctx.strokeRect(x, 0, naturalKeyWidth, naturalKeyHeight)
         if ($showNotesOnKeyboard.checked) {
@@ -139,7 +238,7 @@ function renderKeys() {
         const keyOctaveIndex = Math.trunc(tone / 2 + 1)
         const x = octaveWidth * octave + keyOctaveIndex * naturalKeyWidth + keysOffset - accidentalKeyWidth * 0.5
 
-        ctx.fillStyle = isKeyPressed(key) ? PRESSED_KEY_COLOR : "black"
+        ctx.fillStyle = getKeyColor(key, "black")
         ctx.fillRect(x, 0, accidentalKeyWidth, accidentalKeyHeight)
         ctx.strokeRect(x, 0, accidentalKeyWidth, accidentalKeyHeight)
     }
@@ -204,6 +303,7 @@ function setSelectedMidiInput() {
     if (currentlySelectedMidiInputId != newlySelectedInputId) {
         // It changed, so clearing all current presses is a good practice
         clearNotePresses()
+        updateKeysPressed()
         renderKeys()
     }
 
@@ -250,6 +350,10 @@ function onMIDIFailure(msg) {
 }
 
 // Peripherals Input
+// Mouse State
+let mouseAddingKey = null
+let mouseRemovingKey = null
+let mouseRemovingKeyWasPressed = false
 function mousePositionToKeyNumber(x, y) {
     const pianoOffsetedX = x - keysOffset
     const octave = Math.trunc(pianoOffsetedX / octaveWidth)
@@ -287,7 +391,64 @@ function mousePositionToKeyNumber(x, y) {
 
 function canvasMouseDown(e) {
     const keyNumber = mousePositionToKeyNumber(e.offsetX, e.offsetY)
-    console.log("keyNumber: " + keyNumber)
+    if (!isKeyPressed(keyNumber, "mouseActive")) {
+        mouseAddingKey = keyNumber
+        pressKey(keyNumber, "mouseDrag")
+        renderKeys()
+    } else {
+        mouseRemovingKey = keyNumber
+        mouseRemovingKeyWasPressed = true
+        releaseKey(keyNumber, "mouseActive")
+        renderKeys()
+    }
+}
+
+function canvasMouseMove(e) {
+    const keyNumber = mousePositionToKeyNumber(e.offsetX, e.offsetY)
+    if (mouseAddingKey) {
+        if (mouseAddingKey != keyNumber) {
+            releaseKey(mouseAddingKey, "mouseDrag")
+            mouseAddingKey = keyNumber
+            pressKey(mouseAddingKey, "mouseDrag")
+            renderKeys()
+        }
+    }
+    if (mouseRemovingKey) {
+        if (mouseRemovingKey != keyNumber) {
+            if (mouseRemovingKeyWasPressed) {
+                pressKey(mouseRemovingKey, "mouseActive")
+            }
+            mouseRemovingKey = keyNumber
+            if (isKeyPressed(mouseRemovingKey, "mouseActive")) {
+                releaseKey(mouseRemovingKey, "mouseActive")
+                mouseRemovingKeyWasPressed = true
+            } else {
+                mouseRemovingKeyWasPressed = false
+            }
+            renderKeys()
+        }
+    }
+}
+function canvasMouseUp(e) {
+    if (mouseAddingKey) {
+        releaseKey(mouseAddingKey, "mouseDrag")
+        pressKey(mouseAddingKey, "mouseActive")
+        mouseAddingKey = null
+        renderKeys()
+    } 
+    if (mouseRemovingKey) {
+        releaseKey(mouseRemovingKey, "mouseActive")
+        mouseRemovingKey = null
+        mouseRemovingKeyWasPressed = false
+        renderKeys()
+    }
+}
+function canvasMouseLeave(e) {
+    if (mouseAddingKey) {
+        releaseKey(mouseAddingKey, "mouseDrag")
+        mouseAddingKey = null
+        renderKeys()
+    }
 }
 
 // Initialization
@@ -296,7 +457,10 @@ $showOctaveNames.onchange = () => { updateKeysPressed(); renderKeys() }
 $showNotesOnKeyboard.onchange = renderKeys
 navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure)
 $midiSelect.onchange = setSelectedMidiInput
-$pianoCanvas.onmousedown = canvasMouseDown
+$pianoCanvas.onpointerdown = canvasMouseDown
+$pianoCanvas.onpointermove = canvasMouseMove
+$pianoCanvas.onpointerup = canvasMouseUp
+$pianoCanvas.onpointerleave = canvasMouseLeave
 
 clearNotePresses()
 recalcCanvas()
