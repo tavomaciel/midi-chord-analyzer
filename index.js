@@ -15,6 +15,8 @@ let octaves = 0
 let octaveWidth = 0
 let naturalKeyWidth = 0
 let accidentalKeyWidth = 0
+let naturalKeyHeight = 0
+let accidentalKeyHeight = 0
 let keysOffset = 0
 
 // Notes state
@@ -89,6 +91,19 @@ function isNaturalKey(note) {
     }
 }
 
+function naturalKeyOctaveIndexToPitchClass(naturalKeyOctaveIndex) {
+    // Math.ceil(keyOctaveIndex * 8) / 5 ???
+    switch(naturalKeyOctaveIndex) {
+        case 0: return 0;
+        case 1: return 2;
+        case 2: return 4;
+        case 3: return 5;
+        case 4: return 7;
+        case 5: return 9;
+        case 6: return 11;
+    }
+}
+
 // Rendering & Canvas
 function renderKeys() {
     const ctx = $pianoCanvas.getContext("2d")
@@ -105,14 +120,13 @@ function renderKeys() {
         const octave = Math.trunc(key / TONES_PER_OCTAVE)
         const keyOctaveIndex = Math.trunc((5 * tone) / 8)
         const x = octaveWidth * octave + keyOctaveIndex * naturalKeyWidth + keysOffset
-        const height = $pianoCanvas.height
 
         ctx.fillStyle = isKeyPressed(key) ? PRESSED_KEY_COLOR : "white"
-        ctx.fillRect(x, 0, naturalKeyWidth, height)
-        ctx.strokeRect(x, 0, naturalKeyWidth, height)
+        ctx.fillRect(x, 0, naturalKeyWidth, naturalKeyHeight)
+        ctx.strokeRect(x, 0, naturalKeyWidth, naturalKeyHeight)
         if ($showNotesOnKeyboard.checked) {
             ctx.fillStyle = "black"
-            ctx.fillText(noteFriendlyName(key), x + naturalKeyWidth / 2, height * 0.9)
+            ctx.fillText(noteFriendlyName(key), x + naturalKeyWidth / 2, naturalKeyHeight * 0.9)
         }
     }
     // Render black keys...
@@ -124,11 +138,10 @@ function renderKeys() {
         const octave = Math.trunc(key / TONES_PER_OCTAVE)
         const keyOctaveIndex = Math.trunc(tone / 2 + 1)
         const x = octaveWidth * octave + keyOctaveIndex * naturalKeyWidth + keysOffset - accidentalKeyWidth * 0.5
-        const height = $pianoCanvas.height / 2.0
 
         ctx.fillStyle = isKeyPressed(key) ? PRESSED_KEY_COLOR : "black"
-        ctx.fillRect(x, 0, accidentalKeyWidth, height)
-        ctx.strokeRect(x, 0, accidentalKeyWidth, height)
+        ctx.fillRect(x, 0, accidentalKeyWidth, accidentalKeyHeight)
+        ctx.strokeRect(x, 0, accidentalKeyWidth, accidentalKeyHeight)
     }
 }
 
@@ -146,10 +159,12 @@ function recalcCanvas() {
     naturalKeyWidth = octaveWidth / 7
     accidentalKeyWidth = naturalKeyWidth / 2.0
     keysOffset = -octaveWidth * firstKey / TONES_PER_OCTAVE + canvasOffset / 2
+    naturalKeyHeight = $pianoCanvas.height
+    accidentalKeyHeight = $pianoCanvas.height / 2.0
     renderKeys()
 }
 
-// MIDI functions
+// MIDI Input
 function onMIDIMessage(event) {
     const messageMask = 0xF0
     const channelMask = 0x0F
@@ -234,12 +249,54 @@ function onMIDIFailure(msg) {
     console.log("Failed to get MIDI access - " + msg)
 }
 
+// Peripherals Input
+function mousePositionToKeyNumber(x, y) {
+    const pianoOffsetedX = x - keysOffset
+    const octave = Math.trunc(pianoOffsetedX / octaveWidth)
+    const keyOctaveIndex = (pianoOffsetedX - (octaveWidth * octave)) / naturalKeyWidth
+    const canReachAccidentalKeys = y <= accidentalKeyHeight
+    if (!canReachAccidentalKeys) {
+        const naturalKeyOctaveIndex = Math.trunc(keyOctaveIndex)
+        const pitchClass = naturalKeyOctaveIndexToPitchClass(naturalKeyOctaveIndex);
+        return octave * TONES_PER_OCTAVE + pitchClass
+    } else {
+        // Can be either a natural or accidental key
+        const accidentalKeyThreshold = (accidentalKeyWidth / 2) / naturalKeyWidth
+        const naturalKeyOctaveIndex = Math.trunc(keyOctaveIndex)
+        const naturalKeyPitchClass = naturalKeyOctaveIndexToPitchClass(naturalKeyOctaveIndex)
+        const fract = (keyOctaveIndex - naturalKeyOctaveIndex)
+        if (fract > accidentalKeyThreshold && fract < 1 - accidentalKeyThreshold) {
+            // Definitely not touching any accidental key
+            return octave * TONES_PER_OCTAVE + naturalKeyPitchClass
+        } else {
+            const isPastKeyHalf = fract >= 0.5
+            const nextNaturalKeyOctaveIndex = isPastKeyHalf ? Math.ceil(keyOctaveIndex) : (naturalKeyOctaveIndex-1)
+            const nextNaturalKeyPitchClass = naturalKeyOctaveIndexToPitchClass(nextNaturalKeyOctaveIndex)
+            const isThereANoteInBetween = Math.abs(nextNaturalKeyPitchClass - naturalKeyPitchClass) > 1
+            if (!isThereANoteInBetween) {
+                // There are no notes in between... Definitely the closest natural key then.
+                return octave * TONES_PER_OCTAVE + naturalKeyPitchClass
+            } else {
+                // Get the key in between
+                const accidentalKeyPitchClass = (naturalKeyPitchClass + nextNaturalKeyPitchClass) / 2
+                return octave * TONES_PER_OCTAVE + accidentalKeyPitchClass
+            }
+        }
+    }
+}
+
+function canvasMouseDown(e) {
+    const keyNumber = mousePositionToKeyNumber(e.offsetX, e.offsetY)
+    console.log("keyNumber: " + keyNumber)
+}
+
 // Initialization
 new ResizeObserver(recalcCanvas).observe($pianoWrapper)
 $showOctaveNames.onchange = () => { updateKeysPressed(); renderKeys() }
 $showNotesOnKeyboard.onchange = renderKeys
 navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure)
 $midiSelect.onchange = setSelectedMidiInput
+$pianoCanvas.onmousedown = canvasMouseDown
 
 clearNotePresses()
 recalcCanvas()
