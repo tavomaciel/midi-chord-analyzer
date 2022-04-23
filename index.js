@@ -27,7 +27,25 @@ const KEY_STROKE_COLOR = "#223"
 
 // Chord constants https://en.wikipedia.org/wiki/List_of_chords
 const diads = [
-    { name: "Power Chord", abbrv: "5", pitchClasses: [0, 7] }
+    { name: "Minor Second", abbrv: "min2", pitchClasses: [0, 1], startsChallengeDisabled: true },
+    { name: "Major Second", abbrv: "maj2", pitchClasses: [0, 2], startsChallengeDisabled: true },
+    { name: "Minor Third", abbrv: "min3", pitchClasses: [0, 3], startsChallengeDisabled: true },
+    { name: "Major Third", abbrv: "maj3", pitchClasses: [0, 4], startsChallengeDisabled: true },
+    { name: "Perfect Fourth", abbrv: "perf4", pitchClasses: [0, 5], startsChallengeDisabled: true },
+    { name: "Tritone", abbrv: "tt", pitchClasses: [0, 6], startsChallengeDisabled: true },
+    { name: "Perfect Fifth", abbrv: "perf5", pitchClasses: [0, 7], startsChallengeDisabled: true },
+    { name: "Minor Sixth", abbrv: "min6", pitchClasses: [0, 8], startsChallengeDisabled: true },
+    { name: "Major Sixth", abbrv: "maj6", pitchClasses: [0, 9], startsChallengeDisabled: true },
+    { name: "Minor Seventh", abbrv: "min7", pitchClasses: [0, 10], startsChallengeDisabled: true },
+    { name: "Major Seventh", abbrv: "maj7", pitchClasses: [0, 11], startsChallengeDisabled: true },
+    { name: "Perfect Octave", abbrv: "perf8", pitchClasses: [0, 12], startsChallengeDisabled: true },
+    // { name: "Minor ninth", abbrv: "min9", pitchClasses: [0, 13], startsChallengeDisabled: true },
+    // { name: "Major ninth", abbrv: "maj9", pitchClasses: [0, 14], startsChallengeDisabled: true },
+    // { name: "Minor tenth", abbrv: "min10", pitchClasses: [0, 15], startsChallengeDisabled: true },
+    // { name: "Major tenth", abbrv: "maj10", pitchClasses: [0, 16], startsChallengeDisabled: true },
+    // { name: "Perfect eleventh", abbrv: "perf11", pitchClasses: [0, 17], startsChallengeDisabled: true },
+    // [0, 18]???
+    // { name: "Perfect twelfth", abbrv: "perf12", pitchClasses: [0, 19], startsChallengeDisabled: true },
 ]
 const triads = [
     { name: "Major", abbrv: "maj", pitchClasses: [0, 4, 7] },
@@ -100,8 +118,11 @@ const $challengeSettings = document.getElementById("challengeSettings")
 const $enabledRoots = document.getElementById("enabledRoots")
 const $enabledChords = document.getElementById("enabledChords")
 const $nextChallenge = document.getElementById("nextChallenge")
-// Finish DOM initialization
+const $challengeTargetContainer = document.getElementById("challengeTargetContainer")
 
+let wakeLock = null
+
+// Finish DOM initialization
 for (let i = 0; i < PITCH_NAMES.length; ++i) {
     const div = document.createElement("div")
     const checkbox = document.createElement("input")
@@ -203,7 +224,10 @@ function getChords(notes) {
         return []
     }
     const chords = []
-    for (let i = 0; i < notes.length; ++i) {
+    let inversions = notes.length
+    if (notes.length == 2)
+        inversions = 1 // Don't look for inversions for simple intervals/diads
+    for (let i = 0; i < inversions; ++i) {
         const transposedPCSet = []
         const root = notes[i]
         for (let j = 0; j < notes.length; ++j) {
@@ -511,12 +535,12 @@ function checkChallenge(chordsPressed) {
 
         challengeStarted = false
         $challengeCongrats.hidden = false
-        $challengeContainer.hidden = true
+        $challengeTargetContainer.hidden = true
         generateNewChallengeTarget()
         setTimeout(() => {
             challengeStarted = true
             $challengeCongrats.hidden = true
-            $challengeContainer.hidden = false
+            $challengeTargetContainer.hidden = false
             challengeStartTime = Date.now()
         }, 1000)
     }
@@ -647,10 +671,21 @@ $pianoCanvas.onpointerdown = canvasMouseDown
 $pianoCanvas.onpointermove = canvasMouseMove
 $pianoCanvas.onpointerup = canvasMouseUp
 $pianoCanvas.onpointerleave = canvasMouseLeave
-
 $startChallenge.onclick = startChallenge
 $showSettings.onclick = showSettings
 $nextChallenge.onclick = generateNewChallengeTarget
 
 clearNotePresses()
 recalcCanvas()
+
+async function requestWakeLock() {
+    try {
+        wakeLock = navigator.wakeLock.request('screen')
+    } catch (err) {
+        console.error("Couldn't acquire lock.", err)
+    }
+    document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState === 'visible') wakeLock = await navigator.wakeLock.request('screen')
+    })
+}
+requestWakeLock()
