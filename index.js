@@ -27,25 +27,25 @@ const KEY_STROKE_COLOR = "#223"
 
 // Chord constants https://en.wikipedia.org/wiki/List_of_chords
 const diads = [
-    { name: "Minor Second", abbrv: "min2", pitchClasses: [0, 1], startsChallengeDisabled: true },
-    { name: "Major Second", abbrv: "maj2", pitchClasses: [0, 2], startsChallengeDisabled: true },
-    { name: "Minor Third", abbrv: "min3", pitchClasses: [0, 3], startsChallengeDisabled: true },
-    { name: "Major Third", abbrv: "maj3", pitchClasses: [0, 4], startsChallengeDisabled: true },
-    { name: "Perfect Fourth", abbrv: "perf4", pitchClasses: [0, 5], startsChallengeDisabled: true },
+    { name: "Minor 2nd", abbrv: "min2", pitchClasses: [0, 1], startsChallengeDisabled: true },
+    { name: "Major 2nd", abbrv: "maj2", pitchClasses: [0, 2], startsChallengeDisabled: true },
+    { name: "Minor 3rd", abbrv: "min3", pitchClasses: [0, 3], startsChallengeDisabled: true },
+    { name: "Major 3rd", abbrv: "maj3", pitchClasses: [0, 4], startsChallengeDisabled: true },
+    { name: "Perfect 4th", abbrv: "perf4", pitchClasses: [0, 5], startsChallengeDisabled: true },
     { name: "Tritone", abbrv: "tt", pitchClasses: [0, 6], startsChallengeDisabled: true },
-    { name: "Perfect Fifth", abbrv: "perf5", pitchClasses: [0, 7], startsChallengeDisabled: true },
-    { name: "Minor Sixth", abbrv: "min6", pitchClasses: [0, 8], startsChallengeDisabled: true },
-    { name: "Major Sixth", abbrv: "maj6", pitchClasses: [0, 9], startsChallengeDisabled: true },
-    { name: "Minor Seventh", abbrv: "min7", pitchClasses: [0, 10], startsChallengeDisabled: true },
-    { name: "Major Seventh", abbrv: "maj7", pitchClasses: [0, 11], startsChallengeDisabled: true },
+    { name: "Perfect 5th", abbrv: "5", pitchClasses: [0, 7], startsChallengeDisabled: true },
+    { name: "Minor 6th", abbrv: "min6", pitchClasses: [0, 8], startsChallengeDisabled: true },
+    { name: "Major 6th", abbrv: "maj6", pitchClasses: [0, 9], startsChallengeDisabled: true },
+    { name: "Minor 7th", abbrv: "min7", pitchClasses: [0, 10], startsChallengeDisabled: true },
+    { name: "Major 7th", abbrv: "maj7", pitchClasses: [0, 11], startsChallengeDisabled: true },
     { name: "Perfect Octave", abbrv: "perf8", pitchClasses: [0, 12], startsChallengeDisabled: true },
-    // { name: "Minor ninth", abbrv: "min9", pitchClasses: [0, 13], startsChallengeDisabled: true },
-    // { name: "Major ninth", abbrv: "maj9", pitchClasses: [0, 14], startsChallengeDisabled: true },
-    // { name: "Minor tenth", abbrv: "min10", pitchClasses: [0, 15], startsChallengeDisabled: true },
-    // { name: "Major tenth", abbrv: "maj10", pitchClasses: [0, 16], startsChallengeDisabled: true },
-    // { name: "Perfect eleventh", abbrv: "perf11", pitchClasses: [0, 17], startsChallengeDisabled: true },
+    { name: "Minor 9th", abbrv: "min9", pitchClasses: [0, 13], startsChallengeDisabled: true },
+    { name: "Major 9th", abbrv: "maj9", pitchClasses: [0, 14], startsChallengeDisabled: true },
+    { name: "Minor 10th", abbrv: "min10", pitchClasses: [0, 15], startsChallengeDisabled: true },
+    { name: "Major 10th", abbrv: "maj10", pitchClasses: [0, 16], startsChallengeDisabled: true },
+    { name: "Perfect 11th", abbrv: "perf11", pitchClasses: [0, 17], startsChallengeDisabled: true },
     // [0, 18]???
-    // { name: "Perfect twelfth", abbrv: "perf12", pitchClasses: [0, 19], startsChallengeDisabled: true },
+    { name: "Perfect 12th", abbrv: "perf12", pitchClasses: [0, 19], startsChallengeDisabled: true },
 ]
 const triads = [
     { name: "Major", abbrv: "maj", pitchClasses: [0, 4, 7] },
@@ -58,14 +58,31 @@ const triads = [
 const tetrads = [
     { name: "Major 7th", abbrv: "maj7", pitchClasses: [0, 4, 7, 11] },
     { name: "Minor 7th", abbrv: "min7", pitchClasses: [0, 3, 7, 10] },
-    { name: "Major Minor 7th", abbrv: "majmin7", pitchClasses: [0, 4, 7, 10], startsChallengeDisabled: true },
+    { name: "Dominant 7th", abbrv: "7", pitchClasses: [0, 4, 7, 10] },
     { name: "Minor Major 7th", abbrv: "minmaj7", pitchClasses: [0, 3, 7, 11], startsChallengeDisabled: true },
     { name: "Diminished 7th", abbrv: "dim7", pitchClasses: [0, 3, 6, 9], startsChallengeDisabled: true },
     { name: "Diminished Major 7th", abbrv: "dimmaj7", pitchClasses: [0, 3, 6, 11], startsChallengeDisabled: true },
     { name: "Augmented 7th", abbrv: "aug7", pitchClasses: [0, 4, 8, 10], startsChallengeDisabled: true },
     { name: "Augmented Major 7th", abbrv: "augmaj7", pitchClasses: [0, 4, 8, 11], startsChallengeDisabled: true },
+    { name: "Added 9th", abbrv: "add9", pitchClasses: [0, 4, 7, 14], startsChallengeDisabled: true },
+    { name: "Added 2nd", abbrv: "add2", pitchClasses: [0, 2, 4, 7], startsChallengeDisabled: true },
 ]
-const chordTypes = [diads, triads, tetrads]
+
+const pentads = [
+    { name: "6th/9th", abbrv: "6/9", pitchClasses: [0, 4, 7, 9, 14], startsChallengeDisabled: true },
+    { name: "Dominant 9th", abbrv: "9", pitchClasses: [0, 4, 7, 10, 14], startsChallengeDisabled: true },
+    { name: "Minor 9th", abbrv: "min9", pitchClasses: [0, 3, 7, 10, 14], startsChallengeDisabled: true },
+    { name: "Major 9th", abbrv: "maj9", pitchClasses: [0, 4, 7, 11, 14], startsChallengeDisabled: true },
+]
+
+const hexads = []
+
+const chordTypes = [
+    { name: "Intervals", values: diads },
+    { name: "Triads", values: triads },
+    { name: "Tetrads", values: tetrads },
+    { name: "Pentads", values: pentads }
+]
 
 // Midi access - requested below
 let midi = null
@@ -145,7 +162,13 @@ for (let i = 0; i < PITCH_NAMES.length; ++i) {
 }
 
 for (let i = 0; i < chordTypes.length; ++i) {
-    const chordType = chordTypes[i]
+    if (i != 0) {
+        $enabledChords.appendChild(document.createElement("hr"))
+    }
+    const { name: chordTypeName, values: chordType } = chordTypes[i]
+    const header = document.createElement("h4")
+    header.innerText = chordTypeName
+    $enabledChords.appendChild(header)
     for (let j = 0; j < chordType.length; ++j) {
         const chord = chordType[j]
         // <input type="checkbox" value="maj" name="maj" checked><label for="maj">maj</label>
@@ -219,6 +242,8 @@ function getChords(notes) {
         candidateChords = triads
     } else if (notes.length == 4) {
         candidateChords = tetrads
+    } else if (notes.length == 5) {
+        candidateChords = pentads
     } else {
         // TODO add other types of chords
         return []
@@ -229,16 +254,21 @@ function getChords(notes) {
         inversions = 1 // Don't look for inversions for simple intervals/diads
     for (let i = 0; i < inversions; ++i) {
         const transposedPCSet = []
+        const transposedPSet = []
         const root = notes[i]
         for (let j = 0; j < notes.length; ++j) {
             const note = notes[(i+j) % notes.length]
             // TODO Only works for chords packed in 2 octaves. Anything further than that and this will break.
             // To make it work anywhere in the board, I'd need to normalise all pc sets
-            const transposed = ((note - root) + 12) % 12
-            transposedPCSet.push(transposed)
+            const transposedAndConverted = ((note - root) + 12) % 12
+            const transposed = note - root
+            transposedPCSet.push(transposedAndConverted)
+            transposedPSet.push(transposed)
         }
         for (candidateChord of candidateChords) {
-            if (arrayEquals(candidateChord.pitchClasses, transposedPCSet)) {
+            if (
+                (arrayEquals(candidateChord.pitchClasses, transposedPCSet) && notes.length != 2) ||
+                arrayEquals(candidateChord.pitchClasses, transposedPSet)) {
                 const inversionName = i == 0 ? "" : "/" + PITCH_NAMES[notes[0] % TONES_PER_OCTAVE]
                 // chords.push({
                 //     chord: candidateChord.name,
@@ -476,7 +506,7 @@ function getEnabledChords() {
     const enabledChords = []
     $enabledChords.querySelectorAll("input[type='checkbox']:checked").forEach(checkbox => {
         const chordAbbrv = checkbox.value
-        for (chordType of chordTypes) {
+        for ({ values: chordType } of chordTypes) {
             for (chord of chordType) {
                 if (chord.abbrv == chordAbbrv) {
                     enabledChords.push(chord)

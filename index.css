@@ -77,3 +77,11 @@
     align-items: center;
     flex-basis: 30%;
 }
+#challengeFlex > fieldset > hr {
+    flex-basis: 100%;
+    margin: 0.25em;
+}
+#challengeFlex > fieldset > h4 {
+    flex-basis: 100%;
+    margin: 0;
+}
