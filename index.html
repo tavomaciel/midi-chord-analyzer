@@ -26,14 +26,38 @@
 </head>
 <div id="challenge">
     <div id="challengeStartContainer"><button id="startChallenge">Challenge me!</button></div>
-    <div id="challengeStatus" hidden=true>
-        <div><span>Score: </span> <span id="challengeScore">0</span></div>
-        <div><span>Average time: </span> <span id="challengeAvgTime">0</span> <span>s</span></div>
-    </div>
     <div id="challengeContainer" hidden="true">
-        <span>Play a </span>
-        <span id="challengeTarget"></span>
-        <span> chord!</span>
+        <div id="challengeHeader">
+            <div id="challengeStatusAndShowSettings">
+                <div id="challengeStatus">
+                    <div><span>Score: </span> <span id="challengeScore">0</span></div>
+                    <div><span>Average time: </span> <span id="challengeAvgTime">0</span> <span>s</span></div>
+                </div>
+                <div>
+                    <button id="nextChallenge">Next</button>
+                    <button id="showSettings">Settings</button>
+                </div>
+            </div>
+            <div id="challengeSettings" hidden>
+                <div id="challengeFlex">
+                    <fieldset id="enabledRoots">
+                        <legend>Roots:</legend>
+                        <!-- Filled on index.js -->
+                    </fieldset>
+                    <fieldset id="enabledChords">
+                        <legend>Chords:</legend>
+                        <!-- Filled on index.js -->
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div id="challengeTargetContainer">
+            <span>Play </span>
+            <span id="challengeTargetArticle">a</span>
+            <span> </span>
+            <span id="challengeTarget"></span>
+            <span> chord!</span>
+        </div>
     </div>
     <div id="challengeCongrats" hidden="true">Correct!</div>
 </div>

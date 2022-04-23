@@ -29,7 +29,7 @@
     width: 100%;
     height: 100%;
 }
-#challengeContainer {
+#challengeTargetContainer {
     padding-top: 50px;
     padding-bottom: 50px;
 }
@@ -47,4 +47,29 @@
 }
 #challengeStatus {
     text-align: left;
+}
+#challengeHeader {
+    display: flex;
+    flex-direction: column;
+}
+#challengeStatusAndShowSettings {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#challengeFlex {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+#challengeFlex > fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+#challengeFlex > fieldset > div {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-basis: 30%;
 }

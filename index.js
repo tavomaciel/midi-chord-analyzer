@@ -40,25 +40,20 @@ const triads = [
 const tetrads = [
     { name: "Major 7th", abbrv: "maj7", pitchClasses: [0, 4, 7, 11] },
     { name: "Minor 7th", abbrv: "min7", pitchClasses: [0, 3, 7, 10] },
-    { name: "Major Minor 7th", abbrv: "majmin7", pitchClasses: [0, 4, 7, 10] },
-    { name: "Minor Major 7th", abbrv: "minmaj7", pitchClasses: [0, 3, 7, 11] },
-    { name: "Diminished 7th", abbrv: "dim7", pitchClasses: [0, 3, 6, 9] },
-    { name: "Diminished Major 7th", abbrv: "dimmaj7", pitchClasses: [0, 3, 6, 11] },
-    { name: "Augmented 7th", abbrv: "aug7", pitchClasses: [0, 4, 8, 10] },
-    { name: "Augmented Major 7th", abbrv: "augmaj7", pitchClasses: [0, 4, 8, 11] },
+    { name: "Major Minor 7th", abbrv: "majmin7", pitchClasses: [0, 4, 7, 10], startsChallengeDisabled: true },
+    { name: "Minor Major 7th", abbrv: "minmaj7", pitchClasses: [0, 3, 7, 11], startsChallengeDisabled: true },
+    { name: "Diminished 7th", abbrv: "dim7", pitchClasses: [0, 3, 6, 9], startsChallengeDisabled: true },
+    { name: "Diminished Major 7th", abbrv: "dimmaj7", pitchClasses: [0, 3, 6, 11], startsChallengeDisabled: true },
+    { name: "Augmented 7th", abbrv: "aug7", pitchClasses: [0, 4, 8, 10], startsChallengeDisabled: true },
+    { name: "Augmented Major 7th", abbrv: "augmaj7", pitchClasses: [0, 4, 8, 11], startsChallengeDisabled: true },
 ]
+const chordTypes = [diads, triads, tetrads]
 
 // Midi access - requested below
 let midi = null
 let currentlySelectedMidiInputId = null
 
 // Challenge state
-const challengeChords = [
-    // TODO make this choosable on the UI
-    diads[0],
-    triads[0], triads[1], triads[2], triads[3],
-    tetrads[0], tetrads[1]
-]
 let challengeStarted = false
 let challengeTarget = {
     name: "Cmaj",
@@ -95,11 +90,63 @@ const $showNotesOnKeyboard = document.getElementById("showNotesOnKeyboard")
 const $challengeStartContainer = document.getElementById("challengeStartContainer")
 const $startChallenge = document.getElementById("startChallenge")
 const $challengeContainer = document.getElementById("challengeContainer")
+const $challengeTargetArticle = document.getElementById("challengeTargetArticle")
 const $challengeTarget = document.getElementById("challengeTarget")
 const $challengeCongrats = document.getElementById("challengeCongrats")
-const $challengeStatus = document.getElementById("challengeStatus")
 const $challengeScore = document.getElementById("challengeScore")
 const $challengeAvgTime = document.getElementById("challengeAvgTime")
+const $showSettings = document.getElementById("showSettings")
+const $challengeSettings = document.getElementById("challengeSettings")
+const $enabledRoots = document.getElementById("enabledRoots")
+const $enabledChords = document.getElementById("enabledChords")
+const $nextChallenge = document.getElementById("nextChallenge")
+// Finish DOM initialization
+
+for (let i = 0; i < PITCH_NAMES.length; ++i) {
+    const div = document.createElement("div")
+    const checkbox = document.createElement("input")
+    const label = document.createElement("label")
+    checkbox.type = "checkbox"
+    checkbox.checked = true
+    label.for = checkbox.name = checkbox.value = i
+    label.innerText = PITCH_NAMES[i]
+    checkbox.onchange = (e) => {
+        let checkedCount = $enabledRoots.querySelectorAll("input[type='checkbox']:checked").length
+        if (checkedCount === 0) {
+            e.target.checked = true
+            e.stopPropagation()
+            return false
+        }
+    }
+    div.appendChild(checkbox)
+    div.appendChild(label)
+    $enabledRoots.appendChild(div)
+}
+
+for (let i = 0; i < chordTypes.length; ++i) {
+    const chordType = chordTypes[i]
+    for (let j = 0; j < chordType.length; ++j) {
+        const chord = chordType[j]
+        // <input type="checkbox" value="maj" name="maj" checked><label for="maj">maj</label>
+        const div = document.createElement("div")
+        const checkbox = document.createElement("input")
+        const label = document.createElement("label")
+        checkbox.type = "checkbox"
+        checkbox.checked = !chord.startsChallengeDisabled
+        checkbox.onchange = (e) => {
+            let checkedCount = $enabledChords.querySelectorAll("input[type='checkbox']:checked").length
+            if (checkedCount === 0) {
+                e.target.checked = true
+                e.stopPropagation()
+                return false
+            }
+        }
+        label.innerText = label.for = checkbox.name = checkbox.value = chord.abbrv
+        div.appendChild(checkbox)
+        div.appendChild(label)
+        $enabledChords.appendChild(div)
+    }
+}
 
 // Notes
 function clearNotePresses() {
@@ -139,9 +186,8 @@ function getPitchClasses(notes) {
     return pitchClasses
 }
 function arrayEquals(a, b) {
-    let i = a.length;
-    while (i--)
-        if (a[i] !== b[i]) return false;
+    for(let i = 0; i < a.length; ++i)
+        if (a[i] !== b[i]) return false
     return true
 }
 function getChords(notes) {
@@ -219,13 +265,13 @@ function isNaturalKey(note) {
 function naturalKeyOctaveIndexToPitchClass(naturalKeyOctaveIndex) {
     // Math.ceil(keyOctaveIndex * 8) / 5 ???
     switch(naturalKeyOctaveIndex) {
-        case 0: return 0;
-        case 1: return 2;
-        case 2: return 4;
-        case 3: return 5;
-        case 4: return 7;
-        case 5: return 9;
-        case 6: return 11;
+        case 0: return 0
+        case 1: return 2
+        case 2: return 4
+        case 3: return 5
+        case 4: return 7
+        case 5: return 9
+        case 6: return 11
     }
 }
 
@@ -392,17 +438,57 @@ function onMIDIFailure(msg) {
 }
 
 // Challenge
+function getEnabledRoots() {
+    const enabledRoots = []
+    $enabledRoots.querySelectorAll("input[type='checkbox']:checked")
+        .forEach(checkbox => enabledRoots.push(checkbox.value))
+    if (enabledRoots.length > 0) {
+        return enabledRoots
+    } else {
+        return [0]
+    }
+}
+function getEnabledChords() {
+    const enabledChords = []
+    $enabledChords.querySelectorAll("input[type='checkbox']:checked").forEach(checkbox => {
+        const chordAbbrv = checkbox.value
+        for (chordType of chordTypes) {
+            for (chord of chordType) {
+                if (chord.abbrv == chordAbbrv) {
+                    enabledChords.push(chord)
+                    break
+                }
+            }
+        }
+    })
+    if (enabledChords.length > 0) {
+        return enabledChords
+    } else {
+        return [triads[0]]
+    }
+}
+
 function generateNewChallengeTarget() {
-    // TODO add all chord types
     // TODO add inversions!
-    const chordType = challengeChords[Math.floor(Math.random()*challengeChords.length)]
-    const rootClass = Math.floor(Math.random() * 12)
+    const enabledRoots = getEnabledRoots()
+    const enabledRootIndex = Math.floor(Math.random() * enabledRoots.length)
+    const rootClass = enabledRoots[enabledRootIndex]
+    
+    const enabledChords = getEnabledChords()
+    const enabledChordIndex = Math.floor(Math.random() * enabledChords.length)
+    const chordType = enabledChords[enabledChordIndex]
     challengeTarget = {
         name: PITCH_NAMES[rootClass % TONES_PER_OCTAVE] + chordType.abbrv,
         rootClass: rootClass,
         pitchClasses: chordType.pitchClasses
     }
     $challengeTarget.innerText = challengeTarget.name
+    const firstChar = challengeTarget.name.charAt(0).toLowerCase()
+    if (firstChar == "a" || firstChar == "e") {
+        $challengeTargetArticle.innerText = "an"
+    } else {
+        $challengeTargetArticle.innerText = "a"
+    }
 }
 
 function averageArray(array) {
@@ -423,14 +509,14 @@ function checkChallenge(chordsPressed) {
         challengeTimePerChord.push(Date.now() - challengeStartTime)
         $challengeAvgTime.innerText = Math.trunc(averageArray(challengeTimePerChord) / 10) / 100
 
-        challengeStarted = false;
-        $challengeCongrats.hidden = false;
-        $challengeContainer.hidden = true;
+        challengeStarted = false
+        $challengeCongrats.hidden = false
+        $challengeContainer.hidden = true
         generateNewChallengeTarget()
         setTimeout(() => {
-            challengeStarted = true;
-            $challengeCongrats.hidden = true;
-            $challengeContainer.hidden = false;
+            challengeStarted = true
+            $challengeCongrats.hidden = true
+            $challengeContainer.hidden = false
             challengeStartTime = Date.now()
         }, 1000)
     }
@@ -438,7 +524,6 @@ function checkChallenge(chordsPressed) {
 
 function startChallenge() {
     $challengeStartContainer.hidden = true
-    $challengeStatus.hidden = false
     
     generateNewChallengeTarget()
 
@@ -459,7 +544,7 @@ function mousePositionToKeyNumber(x, y) {
     const canReachAccidentalKeys = y <= accidentalKeyHeight
     if (!canReachAccidentalKeys) {
         const naturalKeyOctaveIndex = Math.trunc(keyOctaveIndex)
-        const pitchClass = naturalKeyOctaveIndexToPitchClass(naturalKeyOctaveIndex);
+        const pitchClass = naturalKeyOctaveIndexToPitchClass(naturalKeyOctaveIndex)
         return octave * TONES_PER_OCTAVE + pitchClass
     } else {
         // Can be either a natural or accidental key
@@ -548,6 +633,9 @@ function canvasMouseLeave(e) {
         renderKeys()
     }
 }
+function showSettings(e) {
+    $challengeSettings.hidden = !$challengeSettings.hidden
+}
 
 // Initialization
 new ResizeObserver(recalcCanvas).observe($pianoWrapper)
@@ -561,6 +649,8 @@ $pianoCanvas.onpointerup = canvasMouseUp
 $pianoCanvas.onpointerleave = canvasMouseLeave
 
 $startChallenge.onclick = startChallenge
+$showSettings.onclick = showSettings
+$nextChallenge.onclick = generateNewChallengeTarget
 
 clearNotePresses()
 recalcCanvas()
