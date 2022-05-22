@@ -39,7 +39,9 @@
 }
 #challengeTarget {
     font-size: 150%;
-    color: #339
+}
+#challengeTarget, #challengeTargetNext {
+    color: #339;
 }
 #startChallenge {
     width: 180px;

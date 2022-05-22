@@ -95,6 +95,11 @@ let challengeTarget = {
     rootClass: 0,
     pitchClasses: [0, 4, 7]
 }
+let challengeTargetNext = {
+    name: "Cmaj",
+    rootClass: 0,
+    pitchClasses: [0, 4, 7]
+}
 let challengeScore = 0
 const challengeTimePerChord = []
 let challengeStartTime = 0
@@ -127,7 +132,7 @@ const $startChallenge = document.getElementById("startChallenge")
 const $challengeContainer = document.getElementById("challengeContainer")
 const $challengeTargetArticle = document.getElementById("challengeTargetArticle")
 const $challengeTarget = document.getElementById("challengeTarget")
-const $challengeCongrats = document.getElementById("challengeCongrats")
+const $challengeTargetNext = document.getElementById("challengeTargetNext")
 const $challengeScore = document.getElementById("challengeScore")
 const $challengeAvgTime = document.getElementById("challengeAvgTime")
 const $showSettings = document.getElementById("showSettings")
@@ -531,11 +536,14 @@ function generateNewChallengeTarget() {
     const enabledChords = getEnabledChords()
     const enabledChordIndex = Math.floor(Math.random() * enabledChords.length)
     const chordType = enabledChords[enabledChordIndex]
-    challengeTarget = {
+    challengeTarget = challengeTargetNext
+    challengeTargetNext = {
         name: PITCH_NAMES[rootClass % TONES_PER_OCTAVE] + chordType.abbrv,
         rootClass: rootClass,
         pitchClasses: chordType.pitchClasses
     }
+
+    $challengeTargetNext.innerText = challengeTargetNext.name
     $challengeTarget.innerText = challengeTarget.name
     const firstChar = challengeTarget.name.charAt(0).toLowerCase()
     if (firstChar == "a" || firstChar == "e") {
@@ -563,22 +571,15 @@ function checkChallenge(chordsPressed) {
         challengeTimePerChord.push(Date.now() - challengeStartTime)
         $challengeAvgTime.innerText = Math.trunc(averageArray(challengeTimePerChord) / 10) / 100
 
-        challengeStarted = false
-        $challengeCongrats.hidden = false
-        $challengeTargetContainer.hidden = true
         generateNewChallengeTarget()
-        setTimeout(() => {
-            challengeStarted = true
-            $challengeCongrats.hidden = true
-            $challengeTargetContainer.hidden = false
-            challengeStartTime = Date.now()
-        }, 1000)
     }
 }
 
 function startChallenge() {
     $challengeStartContainer.hidden = true
     
+    // Hack: Cycle two targets, to populate nextTarget as well
+    generateNewChallengeTarget()
     generateNewChallengeTarget()
 
     challengeStarted = true
