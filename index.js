@@ -198,9 +198,19 @@ for (let i = 0; i < chordTypes.length; ++i) {
 }
 
 // Notes
-function clearNotePresses() {
-    for (let i = 0; i < MIDI_NOTES; ++i) keysPressedChannels[i] = new Set()
-    keysPressed.length = 0
+/**
+ * @param {*} channel channel to clear. When null clears all channels
+ */
+function clearNotePresses(channel = null) {
+    if (channel === null || channel == undefined) {
+        for (let i = 0; i < MIDI_NOTES; ++i) keysPressedChannels[i] = new Set()
+        keysPressed.length = 0
+    } else {
+        for (let i = 0; i < MIDI_NOTES; ++i) {
+            keysPressedChannels[i].delete(channel)
+        }
+        updateKeysPressed()
+    }
 }
 
 function pressKey(key, channel) {
@@ -217,7 +227,9 @@ function releaseKey(key, channel) {
  * @param {*} channel channel to check if it is pressed. When null checks if any channel is pressing that note
  */
 function isKeyPressed(key, channel = null) {
-    return channel ? keysPressedChannels[key].has(channel) : keysPressedChannels[key].size > 0
+    return (channel !== null && channel !== undefined) ?
+        keysPressedChannels[key].has(channel) :
+        keysPressedChannels[key].size > 0
 }
 
 function noteFriendlyName(note) {
@@ -560,6 +572,7 @@ function averageArray(array) {
 }
 function checkChallenge(chordsPressed) {
     if (!challengeStarted) return
+    if (mouseAddingKey || mouseRemovingKey) return // Wait until user finishes picking keys
     // TODO Certainly there are better ways than checking the name...
     if (chordsPressed.includes(challengeTarget.name)) {
         // TODO add 1up sound
@@ -571,6 +584,7 @@ function checkChallenge(chordsPressed) {
         challengeTimePerChord.push(Date.now() - challengeStartTime)
         $challengeAvgTime.innerText = Math.trunc(averageArray(challengeTimePerChord) / 10) / 100
 
+        clearNotePresses("mouseActive")
         generateNewChallengeTarget()
     }
 }
@@ -669,22 +683,28 @@ function canvasMouseMove(e) {
 }
 function canvasMouseUp(e) {
     if (mouseAddingKey) {
-        releaseKey(mouseAddingKey, "mouseDrag")
-        pressKey(mouseAddingKey, "mouseActive")
+        const key = mouseAddingKey
         mouseAddingKey = null
+
+        releaseKey(key, "mouseDrag")
+        pressKey(key, "mouseActive")
         renderKeys()
     } 
     if (mouseRemovingKey) {
-        releaseKey(mouseRemovingKey, "mouseActive")
+        const key = mouseRemovingKey
         mouseRemovingKey = null
         mouseRemovingKeyWasPressed = false
+
+        releaseKey(key, "mouseActive")
         renderKeys()
     }
 }
 function canvasMouseLeave(e) {
     if (mouseAddingKey) {
-        releaseKey(mouseAddingKey, "mouseDrag")
+        const key = mouseAddingKey
         mouseAddingKey = null
+
+        releaseKey(key, "mouseDrag")
         renderKeys()
     }
 }
