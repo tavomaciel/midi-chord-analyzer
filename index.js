@@ -153,6 +153,7 @@ const $challengeSettings = document.getElementById("challengeSettings")
 const $enabledRoots = document.getElementById("enabledRoots")
 const $enabledChords = document.getElementById("enabledChords")
 const $nextChallenge = document.getElementById("nextChallenge")
+const $stopChallenge = document.getElementById("stopChallenge")
 const $challengeTargetContainer = document.getElementById("challengeTargetContainer")
 
 let wakeLock = null
@@ -579,6 +580,7 @@ function generateNewChallengeTarget() {
 }
 
 function averageArray(array) {
+    if (array.length == 0) return 0
     let total = 0
     for (element of array) total += element
     return total / array.length
@@ -602,16 +604,28 @@ function checkChallenge(chordsPressed) {
     }
 }
 
+function stopChallenge() {
+    $challengeStartContainer.hidden = false
+    $challengeContainer.hidden = true
+
+    challengeStarted = false
+}
+
 function startChallenge() {
     $challengeStartContainer.hidden = true
+    $challengeContainer.hidden = false
     
     // Hack: Cycle two targets, to populate nextTarget as well
     generateNewChallengeTarget()
     generateNewChallengeTarget()
 
     challengeStarted = true
-    $challengeContainer.hidden = false
+    challengeScore = 0
     challengeStartTime = Date.now()
+
+    $challengeScore.innerText = challengeScore
+    challengeTimePerChord.length = 0
+    $challengeAvgTime.innerText = 0
 }
 
 // Peripherals Input
@@ -738,6 +752,7 @@ $pianoCanvas.onpointerleave = canvasMouseLeave
 $startChallenge.onclick = startChallenge
 $showSettings.onclick = showSettings
 $nextChallenge.onclick = generateNewChallengeTarget
+$stopChallenge.onclick = stopChallenge
 
 clearNotePresses()
 recalcCanvas()
