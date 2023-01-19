@@ -101,7 +101,7 @@ button {
   height: 40vh;
 }
 
-#circle-maj > #circle-note {
+#circleMajorNotes > .circleNote {
     display: block;
     position: absolute;
     top:  50%;
@@ -111,84 +111,88 @@ button {
     font-size: 3vh;
     margin: -0.5em;
 }
-#circle-min > #circle-note {
+#circleMinorNotes > .circleNote {
     display: block;
     position: absolute;
     top:  50%;
     left: 50%;
     font-family: 'Roboto', 'Gothic A1', sans-serif;
-    font-weight: 300;
+    font-weight: 400;
     margin: -0.5em;
 }
-#circle-maj > #circle-note:nth-of-type(1) {
+#circleMajorNotes > .circleNote:nth-of-type(1) {
     transform: rotate(-90deg) translate(20vh) translate(-1em) rotate(90deg);
 }
-#circle-maj > #circle-note:nth-of-type(2) {
+#circleMajorNotes > .circleNote:nth-of-type(2) {
     transform: rotate(-60deg) translate(20vh) translate(-1em) rotate(60deg);
 }
-#circle-maj > #circle-note:nth-of-type(3) {
+#circleMajorNotes > .circleNote:nth-of-type(3) {
     transform: rotate(-30deg) translate(20vh) translate(-1em) rotate(30deg);
 }
-#circle-maj > #circle-note:nth-of-type(4) {
+#circleMajorNotes > .circleNote:nth-of-type(4) {
     transform: rotate(0) translate(20vh) translate(-1em) rotate(0);
 }
-#circle-maj > #circle-note:nth-of-type(5) {
+#circleMajorNotes > .circleNote:nth-of-type(5) {
     transform: rotate(30deg) translate(20vh) translate(-1em) rotate(-30deg);
 }
-#circle-maj > #circle-note:nth-of-type(6) {
+#circleMajorNotes > .circleNote:nth-of-type(6) {
     transform: rotate(60deg) translate(20vh) translate(-1em) rotate(-60deg);
 }
-#circle-maj > #circle-note:nth-of-type(7) {
+#circleMajorNotes > .circleNote:nth-of-type(7) {
     transform: rotate(90deg) translate(20vh) translate(-1em) rotate(-90deg);
 }
-#circle-maj > #circle-note:nth-of-type(8) {
+#circleMajorNotes > .circleNote:nth-of-type(8) {
     transform: rotate(120deg) translate(20vh) translate(-1em) rotate(-120deg);
 }
-#circle-maj > #circle-note:nth-of-type(9) {
+#circleMajorNotes > .circleNote:nth-of-type(9) {
     transform: rotate(150deg) translate(20vh) translate(-1em) rotate(-150deg);
 }
-#circle-maj > #circle-note:nth-of-type(10) {
+#circleMajorNotes > .circleNote:nth-of-type(10) {
     transform: rotate(180deg) translate(20vh) translate(-1em) rotate(-180deg);
 }
-#circle-maj > #circle-note:nth-of-type(11) {
+#circleMajorNotes > .circleNote:nth-of-type(11) {
     transform: rotate(210deg) translate(20vh) translate(-1em) rotate(-210deg);
 }
-#circle-maj > #circle-note:nth-of-type(12) {
+#circleMajorNotes > .circleNote:nth-of-type(12) {
     transform: rotate(240deg) translate(20vh) translate(-1em) rotate(-240deg);
 }
-#circle-min > #circle-note:nth-of-type(1) {
-    transform: rotate(-90deg) translate(15vh) translate(-1em) rotate(90deg);
+#circleMinorNotes > .circleNote:nth-of-type(1) {
+    transform: rotate(-90deg) translate(12.5vh) translate(-1em) rotate(90deg);
 }
-#circle-min > #circle-note:nth-of-type(2) {
-    transform: rotate(-60deg) translate(15vh) translate(-1em) rotate(60deg);
+#circleMinorNotes > .circleNote:nth-of-type(2) {
+    transform: rotate(-60deg) translate(12.5vh) translate(-1em) rotate(60deg);
 }
-#circle-min > #circle-note:nth-of-type(3) {
-    transform: rotate(-30deg) translate(15vh) translate(-1em) rotate(30deg);
+#circleMinorNotes > .circleNote:nth-of-type(3) {
+    transform: rotate(-30deg) translate(12.5vh) translate(-1em) rotate(30deg);
 }
-#circle-min > #circle-note:nth-of-type(4) {
-    transform: rotate(0) translate(15vh) translate(-1em) rotate(0);
+#circleMinorNotes > .circleNote:nth-of-type(4) {
+    transform: rotate(0) translate(12.5vh) translate(-1em) rotate(0);
 }
-#circle-min > #circle-note:nth-of-type(5) {
-    transform: rotate(30deg) translate(15vh) translate(-1em) rotate(-30deg);
+#circleMinorNotes > .circleNote:nth-of-type(5) {
+    transform: rotate(30deg) translate(12.5vh) translate(-1em) rotate(-30deg);
 }
-#circle-min > #circle-note:nth-of-type(6) {
-    transform: rotate(60deg) translate(15vh) translate(-1em) rotate(-60deg);
+#circleMinorNotes > .circleNote:nth-of-type(6) {
+    transform: rotate(60deg) translate(12.5vh) translate(-1em) rotate(-60deg);
 }
-#circle-min > #circle-note:nth-of-type(7) {
-    transform: rotate(90deg) translate(15vh) translate(-1em) rotate(-90deg);
+#circleMinorNotes > .circleNote:nth-of-type(7) {
+    transform: rotate(90deg) translate(12.5vh) translate(-1em) rotate(-90deg);
 }
-#circle-min > #circle-note:nth-of-type(8) {
-    transform: rotate(120deg) translate(15vh) translate(-1em) rotate(-120deg);
+#circleMinorNotes > .circleNote:nth-of-type(8) {
+    transform: rotate(120deg) translate(12.5vh) translate(-1em) rotate(-120deg);
 }
-#circle-min > #circle-note:nth-of-type(9) {
-    transform: rotate(150deg) translate(15vh) translate(-1em) rotate(-150deg);
+#circleMinorNotes > .circleNote:nth-of-type(9) {
+    transform: rotate(150deg) translate(12.5vh) translate(-1em) rotate(-150deg);
 }
-#circle-min > #circle-note:nth-of-type(10) {
-    transform: rotate(180deg) translate(15vh) translate(-1em) rotate(-180deg);
+#circleMinorNotes > .circleNote:nth-of-type(10) {
+    transform: rotate(180deg) translate(12.5vh) translate(-1em) rotate(-180deg);
 }
-#circle-min > #circle-note:nth-of-type(11) {
-    transform: rotate(210deg) translate(15vh) translate(-1em) rotate(-210deg);
+#circleMinorNotes > .circleNote:nth-of-type(11) {
+    transform: rotate(210deg) translate(12.5vh) translate(-1em) rotate(-210deg);
 }
-#circle-min > #circle-note:nth-of-type(12) {
-    transform: rotate(240deg) translate(15vh) translate(-1em) rotate(-240deg);
+#circleMinorNotes > .circleNote:nth-of-type(12) {
+    transform: rotate(240deg) translate(12.5vh) translate(-1em) rotate(-240deg);
+}
+
+.highlightedCircleNote {
+    background-color: red;
 }

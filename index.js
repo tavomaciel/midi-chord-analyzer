@@ -30,22 +30,22 @@ const KEY_STROKE_COLOR = "#223"
 // t = 10
 // e = 11
 const diads = [
-    { name: "Minor 2nd", abbrv: "min2", pitchClasses: [0, 1], startsChallengeDisabled: true },
-    { name: "Major 2nd", abbrv: "maj2", pitchClasses: [0, 2], startsChallengeDisabled: true },
-    { name: "Minor 3rd", abbrv: "min3", pitchClasses: [0, 3], startsChallengeDisabled: true },
-    { name: "Major 3rd", abbrv: "maj3", pitchClasses: [0, 4], startsChallengeDisabled: true },
+    { name: "Minor 2nd", abbrv: "min2", pitchClasses: [0, 1], startsChallengeDisabled: true, quality: "minor" },
+    { name: "Major 2nd", abbrv: "maj2", pitchClasses: [0, 2], startsChallengeDisabled: true, quality: "major" },
+    { name: "Minor 3rd", abbrv: "min3", pitchClasses: [0, 3], startsChallengeDisabled: true, quality: "minor" },
+    { name: "Major 3rd", abbrv: "maj3", pitchClasses: [0, 4], startsChallengeDisabled: true, quality: "major" },
     { name: "Perfect 4th", abbrv: "perf4", pitchClasses: [0, 5], startsChallengeDisabled: true },
     { name: "Tritone", abbrv: "tt", pitchClasses: [0, 6], startsChallengeDisabled: true },
     { name: "Perfect 5th", abbrv: "5", pitchClasses: [0, 7], startsChallengeDisabled: true },
-    { name: "Minor 6th", abbrv: "min6", pitchClasses: [0, 8], startsChallengeDisabled: true },
-    { name: "Major 6th", abbrv: "maj6", pitchClasses: [0, 9], startsChallengeDisabled: true },
-    { name: "Minor 7th", abbrv: "min7", pitchClasses: [0, 10], startsChallengeDisabled: true },
-    { name: "Major 7th", abbrv: "maj7", pitchClasses: [0, 11], startsChallengeDisabled: true },
+    { name: "Minor 6th", abbrv: "min6", pitchClasses: [0, 8], startsChallengeDisabled: true, quality: "minor" },
+    { name: "Major 6th", abbrv: "maj6", pitchClasses: [0, 9], startsChallengeDisabled: true, quality: "major" },
+    { name: "Minor 7th", abbrv: "min7", pitchClasses: [0, 10], startsChallengeDisabled: true, quality: "minor" },
+    { name: "Major 7th", abbrv: "maj7", pitchClasses: [0, 11], startsChallengeDisabled: true, quality: "major" },
     { name: "Perfect Octave", abbrv: "perf8", pitchClasses: [0, 12], startsChallengeDisabled: true },
-    { name: "Minor 9th", abbrv: "min9", pitchClasses: [0, 13], startsChallengeDisabled: true },
-    { name: "Major 9th", abbrv: "maj9", pitchClasses: [0, 14], startsChallengeDisabled: true },
-    { name: "Minor 10th", abbrv: "min10", pitchClasses: [0, 15], startsChallengeDisabled: true },
-    { name: "Major 10th", abbrv: "maj10", pitchClasses: [0, 16], startsChallengeDisabled: true },
+    { name: "Minor 9th", abbrv: "min9", pitchClasses: [0, 13], startsChallengeDisabled: true, quality: "minor" },
+    { name: "Major 9th", abbrv: "maj9", pitchClasses: [0, 14], startsChallengeDisabled: true, quality: "major" },
+    { name: "Minor 10th", abbrv: "min10", pitchClasses: [0, 15], startsChallengeDisabled: true, quality: "minor" },
+    { name: "Major 10th", abbrv: "maj10", pitchClasses: [0, 16], startsChallengeDisabled: true, quality: "major" },
     { name: "Perfect 11th", abbrv: "perf11", pitchClasses: [0, 17], startsChallengeDisabled: true },
     { name: "Diminshed 12th", abbrv: "dim12", pitchClasses: [0, 18], startsChallengeDisabled: true },
     { name: "Perfect 12th", abbrv: "perf12", pitchClasses: [0, 19], startsChallengeDisabled: true },
@@ -53,38 +53,38 @@ const diads = [
 const triads = [
     { name: "Suspended 2nd", abbrv: "sus2", pitchClasses: [0, 2, 7] },
     { name: "Diminished", abbrv: "°", pitchClasses: [0, 3, 6] },
-    { name: "Minor", abbrv: "m", pitchClasses: [0, 3, 7] },
-    { name: "Major", abbrv: "M", pitchClasses: [0, 4, 7] },
+    { name: "Minor", abbrv: "m", pitchClasses: [0, 3, 7], quality: "minor" },
+    { name: "Major", abbrv: "M", pitchClasses: [0, 4, 7], quality: "major" },
     { name: "Augmented", abbrv: "+", pitchClasses: [0, 4, 8] },
     { name: "Suspended 4th", abbrv: "sus4", pitchClasses: [0, 5, 7] },
 ]
 const tetrads = [
     { name: "Added 2nd", abbrv: "add2", pitchClasses: [0, 2, 4, 7], startsChallengeDisabled: true },
-    { name: "Minor 6th", abbrv: "m6", pitchClasses: [0, 3, 7, 9], startsChallengeDisabled: true },
-    { name: "Major 6th", abbrv: "M6", pitchClasses: [0, 4, 7, 9], startsChallengeDisabled: true },
+    { name: "Minor 6th", abbrv: "m6", pitchClasses: [0, 3, 7, 9], startsChallengeDisabled: true, quality: "minor" },
+    { name: "Major 6th", abbrv: "M6", pitchClasses: [0, 4, 7, 9], startsChallengeDisabled: true, quality: "major" },
     { name: "Diminished 7th", abbrv: "°7", pitchClasses: [0, 3, 6, 9], startsChallengeDisabled: true },
-    { name: "Diminished Major 7th", abbrv: "°M7", pitchClasses: [0, 3, 6, 11], startsChallengeDisabled: true },
-    { name: "Minor 7th", abbrv: "m7", pitchClasses: [0, 3, 7, 10] },
-    { name: "Minor Major 7th", abbrv: "mM7", pitchClasses: [0, 3, 7, 11], startsChallengeDisabled: true },
+    { name: "Diminished Major 7th", abbrv: "°M7", pitchClasses: [0, 3, 6, 11], startsChallengeDisabled: true, quality: "major" },
+    { name: "Minor 7th", abbrv: "m7", pitchClasses: [0, 3, 7, 10], quality: "minor" },
+    { name: "Minor Major 7th", abbrv: "mM7", pitchClasses: [0, 3, 7, 11], startsChallengeDisabled: true, quality: "minor"},
     { name: "Dominant 7th flat 5", abbrv: "7\u266D5", pitchClasses: [0, 4, 6, 10], startsChallengeDisabled: true },
     { name: "Dominant 7th", abbrv: "7", pitchClasses: [0, 4, 7, 10] },
-    { name: "Major 7th", abbrv: "M7", pitchClasses: [0, 4, 7, 11] },
+    { name: "Major 7th", abbrv: "M7", pitchClasses: [0, 4, 7, 11], quality: "major" },
     { name: "Added 9th", abbrv: "add9", pitchClasses: [0, 4, 7, 14], startsChallengeDisabled: true },
     { name: "Added 11th", abbrv: "add11", pitchClasses: [0, 4, 7, 17], startsChallengeDisabled: true },
     { name: "Augmented 7th", abbrv: "+7", pitchClasses: [0, 4, 8, 10], startsChallengeDisabled: true },
-    { name: "Augmented Major 7th", abbrv: "+M7", pitchClasses: [0, 4, 8, 11], startsChallengeDisabled: true },
+    { name: "Augmented Major 7th", abbrv: "+M7", pitchClasses: [0, 4, 8, 11], startsChallengeDisabled: true, quality: "major" },
 ]
 
 const pentads = [
-    { name: "Minor 9th", abbrv: "m9", pitchClasses: [0, 3, 7, 10, 14], startsChallengeDisabled: true },
+    { name: "Minor 9th", abbrv: "m9", pitchClasses: [0, 3, 7, 10, 14], startsChallengeDisabled: true, quality: "minor" },
     { name: "9th flat 5", abbrv: "9\u266D5", pitchClasses: [0, 4, 6, 10, 14], startsChallengeDisabled: true },
     { name: "6th/9th", abbrv: "6/9", pitchClasses: [0, 4, 7, 9, 14], startsChallengeDisabled: true },
     { name: "7th/6th", abbrv: "7/6", pitchClasses: [0, 4, 7, 9, 10], startsChallengeDisabled: true },
     { name: "Dominant 7th minor 9th", abbrv: "7\u266D9", pitchClasses: [0, 4, 7, 10, 13], startsChallengeDisabled: true },
     { name: "Dominant 9th", abbrv: "9", pitchClasses: [0, 4, 7, 10, 14], startsChallengeDisabled: true },
     { name: "Dominant 7th sharp 9th", abbrv: "7\u266F9", pitchClasses: [0, 4, 7, 10, 15], startsChallengeDisabled: true },
-    { name: "Major 9th", abbrv: "M9", pitchClasses: [0, 4, 7, 11, 14], startsChallengeDisabled: true },
-    { name: "Major 7th sharp 11th", abbrv: "M7\u266F11", pitchClasses: [0, 4, 7, 11, 18], startsChallengeDisabled: true },
+    { name: "Major 9th", abbrv: "M9", pitchClasses: [0, 4, 7, 11, 14], startsChallengeDisabled: true, quality: "major" },
+    { name: "Major 7th sharp 11th", abbrv: "M7\u266F11", pitchClasses: [0, 4, 7, 11, 18], startsChallengeDisabled: true, quality: "major" },
     { name: "Dominant 9th augmented 5th", abbrv: "9+5", pitchClasses: [0, 4, 8, 10, 14], startsChallengeDisabled: true },
 ]
 
@@ -155,6 +155,8 @@ const $enabledChords = document.getElementById("enabledChords")
 const $nextChallenge = document.getElementById("nextChallenge")
 const $stopChallenge = document.getElementById("stopChallenge")
 const $challengeTargetContainer = document.getElementById("challengeTargetContainer")
+const $circleMajorNotes = document.getElementById("circleMajorNotes")
+const $circleMinorNotes = document.getElementById("circleMinorNotes")
 
 let wakeLock = null
 
@@ -210,6 +212,22 @@ for (let i = 0; i < chordTypes.length; ++i) {
         $enabledChords.appendChild(div)
     }
 }
+
+function addNotesToCircle($containerElement, startingPitchClass, asLowerCase) {
+    for (let i = 0, circlePitchClass = startingPitchClass; i < 12; ++i, circlePitchClass = (circlePitchClass + 7) % 12) {
+        const div = document.createElement("div")
+        div.classList.add("circleNote")
+        div.classList.add(`pitch${circlePitchClass}`)
+        if (!asLowerCase) {
+            div.innerText = PITCH_NAMES[circlePitchClass]
+        } else {
+            div.innerText = PITCH_NAMES[circlePitchClass].toLowerCase()
+        }
+        $containerElement.appendChild(div)
+    }
+}
+addNotesToCircle($circleMajorNotes, 0, false)
+addNotesToCircle($circleMinorNotes, 9, true)
 
 // Notes
 /**
@@ -301,11 +319,11 @@ function getChords(notes) {
                 (arrayEquals(candidateChord.pitchClasses, transposedPCSet) && notes.length != 2) ||
                 arrayEquals(candidateChord.pitchClasses, transposedPSet)) {
                 const inversionName = i == 0 ? "" : "/" + PITCH_NAMES[notes[0] % TONES_PER_OCTAVE]
-                // chords.push({
-                //     chord: candidateChord.name,
-                //     notation: 
-                // })
-                chords.push(PITCH_NAMES[root % TONES_PER_OCTAVE] + candidateChord.abbrv + inversionName)
+                chords.push({
+                    chordType: candidateChord,
+                    root: root,
+                    inversionName: inversionName
+                })
             }
         }
     }
@@ -324,9 +342,25 @@ function updateKeysPressed() {
     }
     $pressedNotesSpan.innerText = friendlyNames
 
-    const chordsPressed = getChords(keysPressed)
-    $pressedChordsSpan.innerText = chordsPressed.join(', ')
-    checkChallenge(chordsPressed)
+    const pressedChords = getChords(keysPressed)
+    $pressedChordsSpan.innerText = pressedChords
+        .map(pressedChord => PITCH_NAMES[pressedChord.root % TONES_PER_OCTAVE] + pressedChord.chordType.abbrv + pressedChord.inversionName)
+        .join(', ')
+    checkChallenge(pressedChords)
+
+    // TODO move this somewhere else
+    document.querySelectorAll(".highlightedCircleNote").forEach($circleNote => $circleNote.classList.remove("highlightedCircleNote"))
+    pressedChords.forEach(pressedChord => {
+        let circleTypeClass = ""
+        if (pressedChord.chordType.quality === "major") {
+            circleTypeClass = "#circleMajorNotes "
+        } else if (pressedChord.chordType.quality === "minor") {
+            circleTypeClass = "#circleMinorNotes "
+        }
+        const $circleNote = document.querySelectorAll(`${circleTypeClass}.pitch${pressedChord.root % 12}`)
+        $circleNote.forEach($pitchElement => $pitchElement.classList.add("highlightedCircleNote"))
+    })
+
 }
 
 function isNaturalKey(note) {
@@ -566,7 +600,8 @@ function generateNewChallengeTarget() {
     challengeTargetNext = {
         name: PITCH_NAMES[rootClass % TONES_PER_OCTAVE] + chordType.abbrv,
         rootClass: rootClass,
-        pitchClasses: chordType.pitchClasses
+        pitchClasses: chordType.pitchClasses,
+        chordType: chordType
     }
 
     $challengeTargetNext.innerText = challengeTargetNext.name
@@ -589,7 +624,7 @@ function checkChallenge(chordsPressed) {
     if (!challengeStarted) return
     if (mouseAddingKey || mouseRemovingKey) return // Wait until user finishes picking keys
     // TODO Certainly there are better ways than checking the name...
-    if (chordsPressed.includes(challengeTarget.name)) {
+    if (chordsPressed.some(chordPressed => chordPressed.chordType == challengeTarget.chordType && (chordPressed.root % 12) == challengeTarget.rootClass)) {
         // TODO add 1up sound
         
         challengeScore += 1
