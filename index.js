@@ -18,7 +18,7 @@
 const NATURALS_PER_OCTAVE = 8
 const TONES_PER_OCTAVE = 12
 const MIDI_NOTES = 128
-const PITCH_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+const PITCH_NAMES = ["C", "C\u266F", "D", "D\u266F", "E", "F", "F\u266F", "G", "G\u266F", "A", "A\u266F", "B"]
 const PRESSED_KEY_COLOR = "cornflowerblue"
 const MOUSE_ACTIVE_KEY_COLOR = "#DAA"
 const MOUSE_DRAG_KEY_COLOR = "#777"
@@ -52,40 +52,40 @@ const diads = [
 ]
 const triads = [
     { name: "Suspended 2nd", abbrv: "sus2", pitchClasses: [0, 2, 7] },
-    { name: "Diminished", abbrv: "dim", pitchClasses: [0, 3, 6] },
-    { name: "Minor", abbrv: "min", pitchClasses: [0, 3, 7] },
-    { name: "Major", abbrv: "maj", pitchClasses: [0, 4, 7] },
-    { name: "Augmented", abbrv: "aug", pitchClasses: [0, 4, 8] },
+    { name: "Diminished", abbrv: "°", pitchClasses: [0, 3, 6] },
+    { name: "Minor", abbrv: "m", pitchClasses: [0, 3, 7] },
+    { name: "Major", abbrv: "M", pitchClasses: [0, 4, 7] },
+    { name: "Augmented", abbrv: "+", pitchClasses: [0, 4, 8] },
     { name: "Suspended 4th", abbrv: "sus4", pitchClasses: [0, 5, 7] },
 ]
 const tetrads = [
     { name: "Added 2nd", abbrv: "add2", pitchClasses: [0, 2, 4, 7], startsChallengeDisabled: true },
-    { name: "Minor 6th", abbrv: "min6", pitchClasses: [0, 3, 7, 9], startsChallengeDisabled: true },
-    { name: "Major 6th", abbrv: "maj6", pitchClasses: [0, 4, 7, 9], startsChallengeDisabled: true },
-    { name: "Diminished 7th", abbrv: "dim7", pitchClasses: [0, 3, 6, 9], startsChallengeDisabled: true },
-    { name: "Diminished Major 7th", abbrv: "dimmaj7", pitchClasses: [0, 3, 6, 11], startsChallengeDisabled: true },
-    { name: "Minor 7th", abbrv: "min7", pitchClasses: [0, 3, 7, 10] },
-    { name: "Minor Major 7th", abbrv: "minmaj7", pitchClasses: [0, 3, 7, 11], startsChallengeDisabled: true },
-    { name: "Dominant 7th flat 5", abbrv: "7b5", pitchClasses: [0, 4, 6, 10], startsChallengeDisabled: true },
+    { name: "Minor 6th", abbrv: "m6", pitchClasses: [0, 3, 7, 9], startsChallengeDisabled: true },
+    { name: "Major 6th", abbrv: "M6", pitchClasses: [0, 4, 7, 9], startsChallengeDisabled: true },
+    { name: "Diminished 7th", abbrv: "°7", pitchClasses: [0, 3, 6, 9], startsChallengeDisabled: true },
+    { name: "Diminished Major 7th", abbrv: "°M7", pitchClasses: [0, 3, 6, 11], startsChallengeDisabled: true },
+    { name: "Minor 7th", abbrv: "m7", pitchClasses: [0, 3, 7, 10] },
+    { name: "Minor Major 7th", abbrv: "mM7", pitchClasses: [0, 3, 7, 11], startsChallengeDisabled: true },
+    { name: "Dominant 7th flat 5", abbrv: "7\u266D5", pitchClasses: [0, 4, 6, 10], startsChallengeDisabled: true },
     { name: "Dominant 7th", abbrv: "7", pitchClasses: [0, 4, 7, 10] },
-    { name: "Major 7th", abbrv: "maj7", pitchClasses: [0, 4, 7, 11] },
+    { name: "Major 7th", abbrv: "M7", pitchClasses: [0, 4, 7, 11] },
     { name: "Added 9th", abbrv: "add9", pitchClasses: [0, 4, 7, 14], startsChallengeDisabled: true },
     { name: "Added 11th", abbrv: "add11", pitchClasses: [0, 4, 7, 17], startsChallengeDisabled: true },
-    { name: "Augmented 7th", abbrv: "aug7", pitchClasses: [0, 4, 8, 10], startsChallengeDisabled: true },
-    { name: "Augmented Major 7th", abbrv: "augmaj7", pitchClasses: [0, 4, 8, 11], startsChallengeDisabled: true },
+    { name: "Augmented 7th", abbrv: "+7", pitchClasses: [0, 4, 8, 10], startsChallengeDisabled: true },
+    { name: "Augmented Major 7th", abbrv: "+M7", pitchClasses: [0, 4, 8, 11], startsChallengeDisabled: true },
 ]
 
 const pentads = [
-    { name: "Minor 9th", abbrv: "min9", pitchClasses: [0, 3, 7, 10, 14], startsChallengeDisabled: true },
-    { name: "9th flat 5", abbrv: "9b5", pitchClasses: [0, 4, 6, 10, 14], startsChallengeDisabled: true },
+    { name: "Minor 9th", abbrv: "m9", pitchClasses: [0, 3, 7, 10, 14], startsChallengeDisabled: true },
+    { name: "9th flat 5", abbrv: "9\u266D5", pitchClasses: [0, 4, 6, 10, 14], startsChallengeDisabled: true },
     { name: "6th/9th", abbrv: "6/9", pitchClasses: [0, 4, 7, 9, 14], startsChallengeDisabled: true },
     { name: "7th/6th", abbrv: "7/6", pitchClasses: [0, 4, 7, 9, 10], startsChallengeDisabled: true },
-    { name: "Dominant 7th minor 9th", abbrv: "7b9", pitchClasses: [0, 4, 7, 10, 13], startsChallengeDisabled: true },
+    { name: "Dominant 7th minor 9th", abbrv: "7\u266D9", pitchClasses: [0, 4, 7, 10, 13], startsChallengeDisabled: true },
     { name: "Dominant 9th", abbrv: "9", pitchClasses: [0, 4, 7, 10, 14], startsChallengeDisabled: true },
-    { name: "Dominant 7th sharp 9th", abbrv: "7#9", pitchClasses: [0, 4, 7, 10, 15], startsChallengeDisabled: true },
-    { name: "Major 9th", abbrv: "maj9", pitchClasses: [0, 4, 7, 11, 14], startsChallengeDisabled: true },
-    { name: "Major 7th sharp 11th", abbrv: "maj7#11", pitchClasses: [0, 4, 7, 11, 18], startsChallengeDisabled: true },
-    { name: "Dominant 9th augmented 5th", abbrv: "9aug5", pitchClasses: [0, 4, 8, 10, 14], startsChallengeDisabled: true },
+    { name: "Dominant 7th sharp 9th", abbrv: "7\u266F9", pitchClasses: [0, 4, 7, 10, 15], startsChallengeDisabled: true },
+    { name: "Major 9th", abbrv: "M9", pitchClasses: [0, 4, 7, 11, 14], startsChallengeDisabled: true },
+    { name: "Major 7th sharp 11th", abbrv: "M7\u266F11", pitchClasses: [0, 4, 7, 11, 18], startsChallengeDisabled: true },
+    { name: "Dominant 9th augmented 5th", abbrv: "9+5", pitchClasses: [0, 4, 8, 10, 14], startsChallengeDisabled: true },
 ]
 
 const hexads = []
