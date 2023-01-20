@@ -19,7 +19,10 @@
 const NATURALS_PER_OCTAVE = 8
 const TONES_PER_OCTAVE = 12
 const MIDI_NOTES = 128
-const PITCH_NAMES = ["C", "C\u266F", "D", "D\u266F", "E", "F", "F\u266F", "G", "G\u266F", "A", "A\u266F", "B"]
+const PITCH_NAMES =
+    ["C", "C\u266F", "D", "D\u266F", "E", "F", "F\u266F", "G", "G\u266F", "A", "A\u266F", "B"]
+const FLAT_PITCH_NAMES =
+    ["C", "D\u266D", "D", "E\u266D", "E", "F", "G\u266D", "G", "A\u266D", "A", "B\u266D", "B"]
 const PRESSED_KEY_COLOR = "cornflowerblue"
 const MOUSE_ACTIVE_KEY_COLOR = "#DAA"
 const MOUSE_DRAG_KEY_COLOR = "#777"
@@ -240,11 +243,9 @@ function addNotesToCircle($containerElement, startingPitchClass, asLowerCase) {
         const div = document.createElement("div")
         div.classList.add("circleNote")
         div.classList.add(`pitch${circlePitchClass}`)
-        if (!asLowerCase) {
-            div.innerText = PITCH_NAMES[circlePitchClass]
-        } else {
-            div.innerText = PITCH_NAMES[circlePitchClass].toLowerCase()
-        }
+        let pitchName = i == 6 ? (FLAT_PITCH_NAMES[circlePitchClass] + "/" + PITCH_NAMES[circlePitchClass])
+            : (i <= 6 ? PITCH_NAMES[circlePitchClass] : FLAT_PITCH_NAMES[circlePitchClass])
+        div.innerText = !asLowerCase ? pitchName : pitchName.toLowerCase()
         $containerElement.appendChild(div)
     }
 }
