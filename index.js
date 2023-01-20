@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+"use strict";
 const NATURALS_PER_OCTAVE = 8
 const TONES_PER_OCTAVE = 12
 const MIDI_NOTES = 128
@@ -29,65 +30,84 @@ const KEY_STROKE_COLOR = "#223"
 // Chord constants https://en.wikipedia.org/wiki/List_of_chords
 // t = 10
 // e = 11
+
+class ChordType {
+    name;
+    abbrv;
+    pitchClasses;
+    startsChallengeDisabled;
+    quality;
+    constructor(name, abbrv, pitchClasses, startsChallengeDisabled, quality) {
+        this.name = name
+        this.abbrv = abbrv
+        this.pitchClasses = pitchClasses
+        this.startsChallengeDisabled = startsChallengeDisabled
+        this.quality = quality
+    }
+
+    get noteCount() {
+        return this.pitchClasses.length
+    }
+}
 const diads = [
-    { name: "Minor 2nd", abbrv: "min2", pitchClasses: [0, 1], startsChallengeDisabled: true, quality: "minor" },
-    { name: "Major 2nd", abbrv: "maj2", pitchClasses: [0, 2], startsChallengeDisabled: true, quality: "major" },
-    { name: "Minor 3rd", abbrv: "min3", pitchClasses: [0, 3], startsChallengeDisabled: true, quality: "minor" },
-    { name: "Major 3rd", abbrv: "maj3", pitchClasses: [0, 4], startsChallengeDisabled: true, quality: "major" },
-    { name: "Perfect 4th", abbrv: "perf4", pitchClasses: [0, 5], startsChallengeDisabled: true, quality: "perfect" },
-    { name: "Augmented 4th", abbrv: "aug4", pitchClasses: [0, 6], startsChallengeDisabled: true, quality: "augmented" },
-    { name: "Diminished 5th", abbrv: "dim5", pitchClasses: [0, 6], startsChallengeDisabled: true, quality: "diminished" },
-    { name: "Perfect 5th", abbrv: "5", pitchClasses: [0, 7], startsChallengeDisabled: true, quality: "perfect" },
-    { name: "Minor 6th", abbrv: "min6", pitchClasses: [0, 8], startsChallengeDisabled: true, quality: "minor" },
-    { name: "Major 6th", abbrv: "maj6", pitchClasses: [0, 9], startsChallengeDisabled: true, quality: "major" },
-    { name: "Minor 7th", abbrv: "min7", pitchClasses: [0, 10], startsChallengeDisabled: true, quality: "minor" },
-    { name: "Major 7th", abbrv: "maj7", pitchClasses: [0, 11], startsChallengeDisabled: true, quality: "major" },
-    { name: "Perfect Octave", abbrv: "perf8", pitchClasses: [0, 12], startsChallengeDisabled: true, quality: "perfect" },
-    { name: "Minor 9th", abbrv: "min9", pitchClasses: [0, 13], startsChallengeDisabled: true, quality: "minor" },
-    { name: "Major 9th", abbrv: "maj9", pitchClasses: [0, 14], startsChallengeDisabled: true, quality: "major" },
-    { name: "Minor 10th", abbrv: "min10", pitchClasses: [0, 15], startsChallengeDisabled: true, quality: "minor" },
-    { name: "Major 10th", abbrv: "maj10", pitchClasses: [0, 16], startsChallengeDisabled: true, quality: "major" },
-    { name: "Perfect 11th", abbrv: "perf11", pitchClasses: [0, 17], startsChallengeDisabled: true, quality: "perfect"},
-    { name: "Augmented 11th", abbrv: "aug11", pitchClasses: [0, 18], startsChallengeDisabled: true, quality: "augmented" },
-    { name: "Diminished 12th", abbrv: "dim12", pitchClasses: [0, 18], startsChallengeDisabled: true, quality: "diminished" },
-    { name: "Perfect 12th", abbrv: "perf12", pitchClasses: [0, 19], startsChallengeDisabled: true, quality: "perfect" },
+    new ChordType("Minor 2nd", "min2", [0, 1], true, "minor"),
+    new ChordType("Major 2nd", "maj2", [0, 2], true, "major"),
+    new ChordType("Minor 3rd", "min3", [0, 3], true, "minor"),
+    new ChordType("Major 3rd", "maj3", [0, 4], true, "major"),
+    new ChordType("Perfect 4th", "perf4", [0, 5], true, "perfect"),
+    new ChordType("Augmented 4th", "aug4", [0, 6], true, "augmented"),
+    new ChordType("Diminished 5th", "dim5", [0, 6], true, "diminished"),
+    new ChordType("Perfect 5th", "5", [0, 7], true, "perfect"),
+    new ChordType("Minor 6th", "min6", [0, 8], true, "minor"),
+    new ChordType("Major 6th", "maj6", [0, 9], true, "major"),
+    new ChordType("Minor 7th", "min7", [0, 10], true, "minor"),
+    new ChordType("Major 7th", "maj7", [0, 11], true, "major"),
+    new ChordType("Perfect Octave", "perf8", [0, 12], true, "perfect"),
+    new ChordType("Minor 9th", "min9", [0, 13], true, "minor"),
+    new ChordType("Major 9th", "maj9", [0, 14], true, "major"),
+    new ChordType("Minor 10th", "min10", [0, 15], true, "minor"),
+    new ChordType("Major 10th", "maj10", [0, 16], true, "major"),
+    new ChordType("Perfect 11th", "perf11", [0, 17], true, "perfect"),
+    new ChordType("Augmented 11th", "aug11", [0, 18], true, "augmented"),
+    new ChordType("Diminished 12th", "dim12", [0, 18], true, "diminished"),
+    new ChordType("Perfect 12th", "perf12", [0, 19], true, "perfect"),
 ]
 const triads = [
-    { name: "Suspended 2nd", abbrv: "sus2", pitchClasses: [0, 2, 7], quality: "suspended" },
-    { name: "Diminished", abbrv: "°", pitchClasses: [0, 3, 6], quality: "diminished" },
-    { name: "Minor", abbrv: "m", pitchClasses: [0, 3, 7], quality: "minor" },
-    { name: "Major", abbrv: "M", pitchClasses: [0, 4, 7], quality: "major" },
-    { name: "Augmented", abbrv: "+", pitchClasses: [0, 4, 8], quality: "augmented" },
-    { name: "Suspended 4th", abbrv: "sus4", pitchClasses: [0, 5, 7], quality: "suspended" },
+    new ChordType("Suspended 2nd", "sus2", [0, 2, 7], false, "suspended"),
+    new ChordType("Diminished", "°", [0, 3, 6], false, "diminished"),
+    new ChordType("Minor", "m", [0, 3, 7], false, "minor"),
+    new ChordType("Major", "M", [0, 4, 7], false, "major"),
+    new ChordType("Augmented", "+", [0, 4, 8], false, "augmented"),
+    new ChordType("Suspended 4th", "sus4", [0, 5, 7], false, "suspended"),
 ]
 const tetrads = [
-    { name: "Added 2nd", abbrv: "add2", pitchClasses: [0, 2, 4, 7], startsChallengeDisabled: true, quality: "major" },
-    { name: "Minor 6th", abbrv: "m6", pitchClasses: [0, 3, 7, 9], startsChallengeDisabled: true, quality: "minor" },
-    { name: "Major 6th", abbrv: "M6", pitchClasses: [0, 4, 7, 9], startsChallengeDisabled: true, quality: "major" },
-    { name: "Diminished 7th", abbrv: "°7", pitchClasses: [0, 3, 6, 9], startsChallengeDisabled: true, quality: "diminished" },
-    { name: "Diminished Major 7th", abbrv: "°M7", pitchClasses: [0, 3, 6, 11], startsChallengeDisabled: true, quality: "diminished" },
-    { name: "Minor 7th", abbrv: "m7", pitchClasses: [0, 3, 7, 10], quality: "minor" },
-    { name: "Minor Major 7th", abbrv: "mM7", pitchClasses: [0, 3, 7, 11], startsChallengeDisabled: true, quality: "minor"},
-    { name: "Dominant 7th flat 5", abbrv: "7\u266D5", pitchClasses: [0, 4, 6, 10], startsChallengeDisabled: true, quality: "major" },
-    { name: "Dominant 7th", abbrv: "7", pitchClasses: [0, 4, 7, 10], quality: "major" },
-    { name: "Major 7th", abbrv: "M7", pitchClasses: [0, 4, 7, 11], quality: "major" },
-    { name: "Added 9th", abbrv: "add9", pitchClasses: [0, 4, 7, 14], startsChallengeDisabled: true, quality: "major" },
-    { name: "Added 11th", abbrv: "add11", pitchClasses: [0, 4, 7, 17], startsChallengeDisabled: true, quality: "major" },
-    { name: "Augmented 7th", abbrv: "+7", pitchClasses: [0, 4, 8, 10], startsChallengeDisabled: true, quality: "augmented" },
-    { name: "Augmented Major 7th", abbrv: "+M7", pitchClasses: [0, 4, 8, 11], startsChallengeDisabled: true, quality: "major" },
+    new ChordType("Added 2nd", "add2", [0, 2, 4, 7], true, "major"),
+    new ChordType("Minor 6th", "m6", [0, 3, 7, 9], true, "minor"),
+    new ChordType("Major 6th", "M6", [0, 4, 7, 9], true, "major"),
+    new ChordType("Diminished 7th", "°7", [0, 3, 6, 9], true, "diminished"),
+    new ChordType("Diminished Major 7th", "°M7", [0, 3, 6, 11], true, "diminished"),
+    new ChordType("Minor 7th", "m7", [0, 3, 7, 10], false, "minor"),
+    new ChordType("Minor Major 7th", "mM7", [0, 3, 7, 11], true, "minor"),
+    new ChordType("Dominant 7th flat 5", "7\u266D5", [0, 4, 6, 10], true, "major"),
+    new ChordType("Dominant 7th", "7", [0, 4, 7, 10], false, "major"),
+    new ChordType("Major 7th", "M7", [0, 4, 7, 11], false, "major"),
+    new ChordType("Added 9th", "add9", [0, 4, 7, 14], true, "major"),
+    new ChordType("Added 11th", "add11", [0, 4, 7, 17], true, "major"),
+    new ChordType("Augmented 7th", "+7", [0, 4, 8, 10], true, "augmented"),
+    new ChordType("Augmented Major 7th", "+M7", [0, 4, 8, 11], true, "major"),
 ]
 
 const pentads = [
-    { name: "Minor 9th", abbrv: "m9", pitchClasses: [0, 3, 7, 10, 14], startsChallengeDisabled: true, quality: "minor" },
-    { name: "9th flat 5", abbrv: "9\u266D5", pitchClasses: [0, 4, 6, 10, 14], startsChallengeDisabled: true },
-    { name: "6th/9th", abbrv: "6/9", pitchClasses: [0, 4, 7, 9, 14], startsChallengeDisabled: true, quality: "major" },
-    { name: "7th/6th", abbrv: "7/6", pitchClasses: [0, 4, 7, 9, 10], startsChallengeDisabled: true, quality: "major" },
-    { name: "Dominant 7th minor 9th", abbrv: "7\u266D9", pitchClasses: [0, 4, 7, 10, 13], startsChallengeDisabled: true, quality: "major" },
-    { name: "Dominant 9th", abbrv: "9", pitchClasses: [0, 4, 7, 10, 14], startsChallengeDisabled: true, quality: "major" },
-    { name: "Dominant 7th sharp 9th", abbrv: "7\u266F9", pitchClasses: [0, 4, 7, 10, 15], startsChallengeDisabled: true, quality: "major" },
-    { name: "Major 9th", abbrv: "M9", pitchClasses: [0, 4, 7, 11, 14], startsChallengeDisabled: true, quality: "major" },
-    { name: "Major 7th sharp 11th", abbrv: "M7\u266F11", pitchClasses: [0, 4, 7, 11, 18], startsChallengeDisabled: true, quality: "major" },
-    { name: "Dominant 9th augmented 5th", abbrv: "9+5", pitchClasses: [0, 4, 8, 10, 14], startsChallengeDisabled: true, quality: "augmented" },
+    new ChordType("Minor 9th", "m9", [0, 3, 7, 10, 14], true, "minor"),
+    new ChordType("9th flat 5", "9\u266D5", [0, 4, 6, 10, 14], true, "diminished"), //???
+    new ChordType("6th/9th", "6/9", [0, 4, 7, 9, 14], true, "major"),
+    new ChordType("7th/6th", "7/6", [0, 4, 7, 9, 10], true, "major"),
+    new ChordType("Dominant 7th minor 9th", "7\u266D9", [0, 4, 7, 10, 13], true, "major"),
+    new ChordType("Dominant 9th", "9", [0, 4, 7, 10, 14], true, "major"),
+    new ChordType("Dominant 7th sharp 9th", "7\u266F9", [0, 4, 7, 10, 15], true, "major"),
+    new ChordType("Major 9th", "M9", [0, 4, 7, 11, 14], true, "major"),
+    new ChordType("Major 7th sharp 11th", "M7\u266F11", [0, 4, 7, 11, 18], true, "major"),
+    new ChordType("Dominant 9th augmented 5th", "9+5", [0, 4, 8, 10, 14], true, "augmented"),
 ]
 
 const hexads = []
@@ -274,7 +294,7 @@ function noteFriendlyName(note) {
 
 function getPitchClasses(notes) {
     const pitchClasses = []
-    for (note of notes) {
+    for (const note of notes) {
         const pitchClass = note % 12
         if (!pitchClasses.includes(pitchClass)) pitchClasses.push(pitchClass)
     }
@@ -316,7 +336,7 @@ function getChords(notes) {
             transposedPCSet.push(transposedAndConverted)
             transposedPSet.push(transposed)
         }
-        for (candidateChord of candidateChords) {
+        for (const candidateChord of candidateChords) {
             if (
                 (arrayEquals(candidateChord.pitchClasses, transposedPCSet) && notes.length != 2) ||
                 arrayEquals(candidateChord.pitchClasses, transposedPSet)) {
@@ -457,11 +477,25 @@ function recalcCanvas() {
     const wrapperRect = $pianoWrapper.getBoundingClientRect()
     $pianoCanvas.width = wrapperRect.width
     $pianoCanvas.height = wrapperRect.height
+    const isSmallest = window.matchMedia("(max-width: 480px)").matches
+    const isCompact = window.matchMedia("(max-width: 600px)").matches
+    const isMedium = window.matchMedia("(max-Width: 950px)").matches
+    console.log("is compact: " + isCompact + " is medium: " + isMedium)
     // TODO Test on mobile, offset might need to be greater there
     const canvasOffset = window.devicePixelRatio * 20 // 20px
-
-    keys = 88
-    firstKey = 21 // A0
+    if (isSmallest) { // Probably a very small phone
+        keys = 49
+        firstKey = 36 // C2
+    } else if (isCompact) { // Probably phone in portrait
+        keys = 61
+        firstKey = 36 // C2
+    } else if (isMedium) {
+        keys = 76
+        firstKey = 28 // E1
+    } else { // Computer or tablet fullscreen
+        keys = 88
+        firstKey = 21 // A0
+    }
     octaves = keys / TONES_PER_OCTAVE
     octaveWidth = ($pianoCanvas.width - canvasOffset) / octaves
     naturalKeyWidth = octaveWidth / 7
@@ -469,6 +503,20 @@ function recalcCanvas() {
     keysOffset = -octaveWidth * firstKey / TONES_PER_OCTAVE + canvasOffset / 2
     naturalKeyHeight = $pianoCanvas.height
     accidentalKeyHeight = $pianoCanvas.height / 2.0
+
+    // Clear any out-of-screen mouse presses
+    let deletedAnyOutOfScreenPress = false
+    for (let i = 0; i < firstKey; ++i) {
+        deletedAnyOutOfScreenPress |= isKeyPressed(i, "mouseActive")
+        keysPressedChannels[i].delete("mouseActive")
+    }
+    for (let i = firstKey + keys; i < MIDI_NOTES; ++i) {
+        deletedAnyOutOfScreenPress |= isKeyPressed(i, "mouseActive")
+        keysPressedChannels[i].delete("mouseActive")
+    }
+    if (deletedAnyOutOfScreenPress) {
+        updateKeysPressed()
+    }
     renderKeys()
 }
 
@@ -573,8 +621,8 @@ function getEnabledChords() {
     const enabledChords = []
     $enabledChords.querySelectorAll("input[type='checkbox']:checked").forEach(checkbox => {
         const chordAbbrv = checkbox.value
-        for ({ values: chordType } of chordTypes) {
-            for (chord of chordType) {
+        for (const { values: chordType } of chordTypes) {
+            for (const chord of chordType) {
                 if (chord.abbrv == chordAbbrv) {
                     enabledChords.push(chord)
                     break
@@ -619,7 +667,7 @@ function generateNewChallengeTarget() {
 function averageArray(array) {
     if (array.length == 0) return 0
     let total = 0
-    for (element of array) total += element
+    for (const element of array) total += element
     return total / array.length
 }
 function checkChallenge(chordsPressed) {
