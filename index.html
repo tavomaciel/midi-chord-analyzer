@@ -24,76 +24,113 @@
     <link rel="stylesheet" href="index.css">
     <script src="index.js" defer></script>
 </head>
-<div id="challenge">
-    <div id="challengeStartContainer"><button id="startChallenge">Challenge me!</button></div>
-    <div id="challengeContainer" hidden="true">
-        <div id="challengeHeader">
-            <div id="challengeStatusAndShowSettings">
-                <div id="challengeStatus">
-                    <div><span>Score: </span> <span id="challengeScore">0</span></div>
-                    <div><span>Average time: </span> <span id="challengeAvgTime">0</span> <span>s</span></div>
-                </div>
-                <div>
-                    <button id="stopChallenge">Stop</button>
-                    <button id="nextChallenge">Next</button>
-                    <button id="showSettings">Settings</button>
-                </div>
-            </div>
-            <div id="challengeSettings" hidden>
-                <div id="challengeFlex">
-                    <fieldset id="enabledRoots">
-                        <legend>Roots:</legend>
-                        <!-- Filled on index.js -->
-                    </fieldset>
-                    <fieldset id="enabledChords">
-                        <legend>Chords:</legend>
-                        <!-- Filled on index.js -->
-                    </fieldset>
-                </div>
-            </div>
-        </div>
-        <div id="challengeTargetContainer">
-            <span>Play </span>
-            <span id="challengeTargetArticle">a</span>
-            <span> </span>
-            <span id="challengeTarget"></span>
-            <span> chord!</span>
-        </div>
-        <div id="challengeFooter">
-            <span>Next up: </span>
-            <span id="challengeTargetNext"></span>
-        </div>
-    </div>
-</div>
-<div>
-    <span>Connected MIDI Device: </span>
-    <select id="midiSelect">
-        <option>None</option>
-    </select>
-</div>
-<div>
-    <div>
-        <input type="checkbox" id="showNotesOnKeyboard" name="notesOnKeyboard" checked>
-        <label for="notesOnKeyboard">Show notes on keyboard</label>
-        <br/>
-        <input type="checkbox" id="showOctaveNames" name="octaveNames">
-        <label for="octaveNames">Show octaves</label>
-    </div>
-    <span>Keys pressed: </span>
-    <span id="pressedNotesSpan"></span><br/>
-    <span>Chords pressed: </span>
-    <span id="pressedChordsSpan"></span><br/>
-</div>
-<div id="pianoWrapper">
-    <canvas id="pianoCanvas"></canvas>
-</div>
-
-<div id="circle">
-    <div id="circleMajorNotes"></div>
-    <div id="circleMinorNotes"></div>
-</div>
-
 <body>
+    <svg id="svgDefs" style="display: none">
+        <symbol id="clef-svg" viewBox="0 0 1000 1000" width="8px" height="8px" overflow="inherit">
+            <path transform="scale(1,-1)" d="M562 -21c0 89 -65 150 -155 150c7 -44 34 -203 55 -323c71 29 100 102 100 173zM420 -206l-58 329c-59 -14 -104 -63 -104 -124c0 -49 22 -75 61 -99c12 -8 22 -13 22 -22s-9 -13 -17 -13c-80 0 -135 96 -135 166c0 94 62 190 153 217c-7 41 -14 88 -23 142 c-15 -15 -31 -29 -48 -44c-88 -76 -174 -185 -174 -307c0 -151 122 -251 265 -251c19 0 38 2 58 6zM332 822c-8 -31 -11 -65 -11 -102c0 -42 5 -81 11 -121c69 68 146 146 146 250c0 69 -24 118 -39 118c-52 0 -98 -105 -107 -145zM122 -513c0 66 45 123 115 123 c75 0 116 -57 116 -111c0 -64 -47 -104 -94 -111c-3 -1 -5 -2 -5 -4c0 -1 2 -2 3 -3c2 0 23 -5 47 -5c101 0 154 55 154 159c0 53 -11 123 -30 219c-23 -4 -50 -7 -79 -7c-186 0 -349 147 -349 334c0 200 126 321 217 406c21 17 73 70 74 71c-17 112 -22 161 -22 215 c0 84 18 212 82 288c33 39 64 51 71 51c18 0 47 -35 71 -86c16 -36 44 -110 44 -201c0 -159 -73 -284 -179 -395c9 -56 19 -115 29 -175c146 0 253 -102 253 -253c0 -103 -73 -205 -171 -237c6 -39 12 -69 15 -89c10 -57 16 -102 16 -141c0 -63 -14 -129 -68 -167 c-36 -22 -77 -34 -124 -34c-135 0 -186 87 -186 153z"/>
+        </symbol>
+        <symbol id="sharp-svg" viewBox="0 0 1000 1000" width="8px" height="8px" overflow="inherit">
+            <path transform="scale(1,-1)" d="M233 105l-38 -7v-165l33 7h2c8 0 14 -6 14 -14v-59c0 -6 -5 -13 -11 -14l-38 -7v-147h-28v141l-89 -18v-155h-28v149l-33 -7h-3c-8 0 -14 6 -14 14v58c0 6 5 13 11 14l39 8v165l-33 -7h-3c-8 0 -14 6 -14 14v-2v58v2c0 6 5 13 11 14l39 8v147h28v-141l89 18v155h28v-149 l33 7h2c8 0 14 -6 14 -14v-59c0 -6 -5 -13 -11 -14zM78 74v-166l89 19v165z"/>
+        </symbol>
+        <symbol id="flat-svg" viewBox="0 0 1000 1000" width="8px" height="8px" overflow="inherit">
+            <path transform="scale(1,-1)" d="M201 79c1 -8 2 -16 2 -25c0 -41 -15 -90 -53 -133c-54 -61 -119 -93 -123 -95c-2 -1 -6 -2 -8 -2c-8 0 -14 6 -14 14l-5 601c0 8 6 14 14 14h12c8 0 14 -6 14 -14l-4 -321c5 6 34 37 84 37c51 0 75 -37 81 -76zM132 40v11c0 21 -3 55 -39 55c-40 0 -55 -29 -57 -38 l-3 -195c19 15 53 42 70 68c25 38 29 84 29 99z"/>
+        </symbol>
+        <symbol id="staff-svg" viewBox="0 0 24 12" width="24px" height="12px">
+            <path d="M0 2 H24" stroke="black" stroke-width="0.2" shape-rendering="crispEdges"/>
+            <path d="M0 4 H24" stroke="black" stroke-width="0.2" shape-rendering="crispEdges"/>
+            <path d="M0 6 H24" stroke="black" stroke-width="0.2" shape-rendering="crispEdges"/>
+            <path d="M0 8 H24" stroke="black" stroke-width="0.2" shape-rendering="crispEdges"/>
+            <path d="M0 10 H24" stroke="black" stroke-width="0.2" shape-rendering="crispEdges"/>
+        </symbol>
+    </svg>
+    <div id="challenge">
+        <div id="challengeStartContainer"><button id="startChallenge">Challenge me!</button></div>
+        <div id="challengeContainer" hidden="true">
+            <div id="challengeHeader">
+                <div id="challengeStatusAndShowSettings">
+                    <div id="challengeStatus">
+                        <div><span>Score: </span> <span id="challengeScore">0</span></div>
+                        <div><span>Average time: </span> <span id="challengeAvgTime">0</span> <span>s</span></div>
+                    </div>
+                    <div>
+                        <button id="stopChallenge">Stop</button>
+                        <button id="nextChallenge">Next</button>
+                        <button id="showSettings">Settings</button>
+                    </div>
+                </div>
+                <div id="challengeSettings" hidden>
+                    <div id="challengeFlex">
+                        <fieldset id="enabledRoots">
+                            <legend>Roots:</legend>
+                            <!-- Filled on index.js -->
+                        </fieldset>
+                        <fieldset id="enabledChords">
+                            <legend>Chords:</legend>
+                            <!-- Filled on index.js -->
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div id="challengeTargetContainer">
+                <span>Play </span>
+                <span id="challengeTargetArticle">a</span>
+                <span> </span>
+                <span id="challengeTarget"></span>
+                <span> chord!</span>
+            </div>
+            <div id="challengeFooter">
+                <span>Next up: </span>
+                <span id="challengeTargetNext"></span>
+            </div>
+        </div>
+    </div>
+    <div>
+        <span>Connected MIDI Device: </span>
+        <select id="midiSelect">
+            <option>None</option>
+        </select>
+    </div>
+    <div>
+        <div>
+            <input type="checkbox" id="showNotesOnKeyboard" name="notesOnKeyboard" checked>
+            <label for="notesOnKeyboard">Show notes on keyboard</label>
+            <br/>
+            <input type="checkbox" id="showOctaveNames" name="octaveNames">
+            <label for="octaveNames">Show octaves</label>
+        </div>
+        <span>Keys pressed: </span>
+        <span id="pressedNotesSpan"></span><br/>
+        <span>Chords pressed: </span>
+        <span id="pressedChordsSpan"></span><br/>
+    </div>
+    <div id="pianoWrapper">
+        <canvas id="pianoCanvas"></canvas>
+    </div>
+
+    <div id="circle">
+        <div id="circleSharpsAndFlats"></div>
+        <div id="circleMajorNotes"></div>
+        <div id="circleMinorNotes"></div>
+    </div>
+    <svg viewBox="0 0 24 15.5" style="display: none" style="height: 25vh" overflow="inherit">
+        <use href="#staff-svg" x="0" y="2"/>
+        <use href="#clef-svg" x="0.4" y="10" opacity="30%"/>
+
+        <use href="#sharp-svg" x="6" y="4"/>
+        <use href="#sharp-svg" x="8.5" y="7"/>
+        <use href="#sharp-svg" x="11" y="3"/>
+        <use href="#sharp-svg" x="13.5" y="6"/>
+        <use href="#sharp-svg" x="16" y="9"/>
+        <use href="#sharp-svg" x="18.5" y="5"/>
+        <use href="#sharp-svg" x="21" y="8"/>
+        <!-- <use href="#flat-svg" x="6" y="8"/>
+        <use href="#flat-svg" x="8.5" y="5"/>
+        <use href="#flat-svg" x="11" y="9"/>
+        <use href="#flat-svg" x="13.5" y="6"/>
+        <use href="#flat-svg" x="16" y="10"/>
+        <use href="#flat-svg" x="18.5" y="7"/>
+        <use href="#flat-svg" x="21" y="11"/> -->
+    </svg>
 </body>
 
 </html>
