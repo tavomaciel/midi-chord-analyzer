@@ -122,6 +122,45 @@ const chordTypes = [
     { name: "Pentads", values: pentads }
 ]
 
+// Scale constants
+// https://ianring.com/musictheory/scales/finder.php
+class ScaleType {
+    name;
+    identifier;
+    pitchClassSet;
+    intervals;
+    
+    hasNote(note) {
+        return ((1 << (note % 12)) & this.identifier) !== 0
+    }
+
+    rootedScaleHasNote(scaleRoot, note) {
+        return ((1 << ((scaleRoot + note) % 12)) & this.identifier) !== 0
+    }
+
+    constructor(name, identifier) {
+        this.name = name
+        this.identifier = identifier
+        const pcs = this.pitchClassSet = []
+        for (let i = 0; i < 12; ++i) {
+            if (this.hasNote(i)) pcs.push(i)
+        }
+        const is = this.intervals = []
+        if (pcs.length > 0) {
+            for (let i = 0; i <= pcs.length; ++i) {
+                const pitchClass = pcs[i]
+                const nextPitchClass = pcs[(i + 1) % pcs.length]
+                const interval = nextPitchClass - pitchClass
+                is.push(interval)
+            }
+        }
+    }
+}
+
+const majorScale = new ScaleType("Major", 2741)
+const minorScale = new ScaleType("Minor", 1453)
+const harmonicMinorScale = new ScaleType("Harmonic Minor", 2477)
+
 // Midi access - requested below
 let midi = null
 let currentlySelectedMidiInputId = null
@@ -387,21 +426,7 @@ function updateKeysPressed() {
 }
 
 function isNaturalKey(note) {
-    // TODO better way of doing this?
-    // Can be replaced with
-    // fun transform(note: Int): Boolean = (note % 12)
-    //   .let { ((6 * it) / 5 - it / 10) % 2 == 0 }
-    // But there might be ways of improving it, with modulo arithmetic.
-    switch (note % 12) {
-        case 0: case 2: case 4:
-            return true
-        case 1: case 3:
-            return false
-        case 5: case 7: case 9: case 11:
-            return true
-        case 6: case 8: case 10:
-            return false
-    }
+    return majorScale.hasNote(note)
 }
 
 function naturalKeyOctaveIndexToPitchClass(naturalKeyOctaveIndex) {
