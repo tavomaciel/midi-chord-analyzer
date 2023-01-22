@@ -410,16 +410,24 @@ function updateKeysPressed() {
         .join(', ')
 
     // TODO move this somewhere else
-    document.querySelectorAll(".highlightedCircleNote").forEach($circleNote => $circleNote.classList.remove("highlightedCircleNote"))
+    document.querySelectorAll(".highlightedCircleScale, .highlightedCircleInterval").forEach($circleNote => {
+        const classList = $circleNote.classList
+        classList.remove("highlightedCircleScale")
+        classList.remove("highlightedCircleInterval")
+    })
     pressedChords.forEach(pressedChord => {
         let circleTypeClass = ""
-        if (pressedChord.chordType.quality === "major") {
+        if (pressedChord.chordType.quality === "major" || pressedChord.chordType.quality === "augmented") {
             circleTypeClass = "#circleMajorNotes "
-        } else if (pressedChord.chordType.quality === "minor") {
+        } else if (pressedChord.chordType.quality === "minor" || pressedChord.chordType.quality === "diminished") {
             circleTypeClass = "#circleMinorNotes "
         }
         const $circleNote = document.querySelectorAll(`${circleTypeClass}.pitch${pressedChord.root % 12}`)
-        $circleNote.forEach($pitchElement => $pitchElement.classList.add("highlightedCircleNote"))
+        if (pressedChord.chordType.noteCount == 2) {
+            $circleNote.forEach($pitchElement => $pitchElement.classList.add("highlightedCircleInterval"))
+        } else {
+            $circleNote.forEach($pitchElement => $pitchElement.classList.add("highlightedCircleScale"))
+        }
     })
 
     checkChallenge(pressedChords)
@@ -791,6 +799,7 @@ function canvasMouseDown(e) {
         releaseKey(keyNumber, "mouseActive")
         renderKeys()
     }
+    e.stopPropagation()
 }
 
 function canvasMouseMove(e) {
@@ -818,6 +827,7 @@ function canvasMouseMove(e) {
             renderKeys()
         }
     }
+    e.stopPropagation()
 }
 function canvasMouseUp(e) {
     if (mouseAddingKey) {
@@ -827,6 +837,7 @@ function canvasMouseUp(e) {
         releaseKey(key, "mouseDrag")
         pressKey(key, "mouseActive")
         renderKeys()
+        e.stopPropagation()
     } 
     if (mouseRemovingKey) {
         const key = mouseRemovingKey
@@ -835,6 +846,7 @@ function canvasMouseUp(e) {
 
         releaseKey(key, "mouseActive")
         renderKeys()
+        e.stopPropagation()
     }
 }
 function canvasMouseLeave(e) {
@@ -844,6 +856,7 @@ function canvasMouseLeave(e) {
 
         releaseKey(key, "mouseDrag")
         renderKeys()
+        e.stopPropagation()
     }
 }
 function showSettings(e) {
