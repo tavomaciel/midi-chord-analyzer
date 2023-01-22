@@ -800,6 +800,7 @@ function canvasMouseDown(e) {
         renderKeys()
     }
     e.stopPropagation()
+    e.preventDefault()
 }
 
 function canvasMouseMove(e) {
@@ -828,6 +829,7 @@ function canvasMouseMove(e) {
         }
     }
     e.stopPropagation()
+    e.preventDefault()
 }
 function canvasMouseUp(e) {
     if (mouseAddingKey) {
@@ -838,6 +840,7 @@ function canvasMouseUp(e) {
         pressKey(key, "mouseActive")
         renderKeys()
         e.stopPropagation()
+        e.preventDefault()
     } 
     if (mouseRemovingKey) {
         const key = mouseRemovingKey
@@ -847,6 +850,7 @@ function canvasMouseUp(e) {
         releaseKey(key, "mouseActive")
         renderKeys()
         e.stopPropagation()
+        e.preventDefault()
     }
 }
 function canvasMouseLeave(e) {
@@ -857,6 +861,7 @@ function canvasMouseLeave(e) {
         releaseKey(key, "mouseDrag")
         renderKeys()
         e.stopPropagation()
+        e.preventDefault()
     }
 }
 function showSettings(e) {
